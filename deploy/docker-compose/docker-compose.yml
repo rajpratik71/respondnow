@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  # MongoDB Replica Set
+  mongo1:
+    image: mongo:6.0
+    container_name: mongo1
+    hostname: mongo1
+    command: ["--replSet", "rs0", "--bind_ip_all", "--port", "27017"]
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo1_data:/data/db
+      - ./mongo-init.sh:/docker-entrypoint-initdb.d/mongo-init.sh:ro
+    networks:
+      - respondnow-network
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongo1:27017'}]}) }" | mongosh --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+
+  # RespondNow Server (Spring Boot)
+  respondnow-server:
+    build:
+      context: ../../server
+      dockerfile: Dockerfile
+    image: respondnow/server:latest
+    container_name: respondnow-server
+    ports:
+      - "8080:8080"
+    environment:
+      - MONGO_URI=mongodb://mongo1:27017/
+      - MONGO_DATABASE=${MONGO_DATABASE:-respondnow}
+      - SERVER_PORT=${SERVER_PORT:-8080}
+      - JWT_SECRET=${JWT_SECRET:-mySecretKeyUsedToEncodeJWTForAuthenticationPurpose}
+      - JWT_EXPIRATION=${JWT_EXPIRATION:-86400000}
+      - SLACK_ENABLED=${SLACK_ENABLED:-false}
+      - SLACK_BOT_TOKEN=${SLACK_BOT_TOKEN:-}
+      - SLACK_APP_TOKEN=${SLACK_APP_TOKEN:-}
+      - SLACK_INCIDENT_CHANNEL_ID=${SLACK_INCIDENT_CHANNEL_ID:-}
+      - DEFAULT_USER_EMAIL=${DEFAULT_USER_EMAIL:-admin@respondnow.io}
+      - DEFAULT_USER_NAME=${DEFAULT_USER_NAME:-Admin}
+      - DEFAULT_USER_PASSWORD=${DEFAULT_USER_PASSWORD:-respondnow}
+      - DEFAULT_ACCOUNT_ID=${DEFAULT_ACCOUNT_ID:-default_account_id}
+      - DEFAULT_ACCOUNT_NAME=${DEFAULT_ACCOUNT_NAME:-Default Account}
+      - DEFAULT_ORG_ID=${DEFAULT_ORG_ID:-default_org_id}
+      - DEFAULT_ORG_NAME=${DEFAULT_ORG_NAME:-Default Org}
+      - DEFAULT_PROJECT_ID=${DEFAULT_PROJECT_ID:-default_project_id}
+      - DEFAULT_PROJECT_NAME=${DEFAULT_PROJECT_NAME:-Default Project}
+    depends_on:
+      mongo1:
+        condition: service_healthy
+    networks:
+      - respondnow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    restart: unless-stopped
+
+  # RespondNow Portal (React Frontend)
+  respondnow-portal:
+    build:
+      context: ../../portal
+      dockerfile: Dockerfile.multistage
+    image: respondnow/portal:latest
+    container_name: respondnow-portal
+    ports:
+      - "8191:8191"
+    networks:
+      - respondnow-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8191/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    restart: unless-stopped
+
+volumes:
+  mongo1_data:
+
+networks:
+  respondnow-network:
+    driver: bridge

@@ -1,0 +1,153 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: respondnow-server
+  namespace: respondnow
+  labels:
+    app.kubernetes.io/name: respondnow-server
+    app.kubernetes.io/component: backend
+spec:
+  ports:
+    - port: 8080
+      targetPort: 8080
+      name: http
+  selector:
+    app.kubernetes.io/name: respondnow-server
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: respondnow-server
+  namespace: respondnow
+  labels:
+    app.kubernetes.io/name: respondnow-server
+    app.kubernetes.io/component: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: respondnow-server
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: respondnow-server
+        app.kubernetes.io/component: backend
+    spec:
+      containers:
+        - name: server
+          image: respondnow/server:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 8080
+              name: http
+          env:
+            - name: SLACK_ENABLED
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: SLACK_ENABLED
+            - name: MONGO_URI
+              value: "mongodb://mongodb:27017/"
+            - name: MONGO_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: MONGO_DATABASE
+            - name: SERVER_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: SERVER_PORT
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: respondnow-secret
+                  key: JWT_SECRET
+            - name: JWT_EXPIRATION
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: JWT_EXPIRATION
+            - name: SLACK_BOT_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: respondnow-secret
+                  key: SLACK_BOT_TOKEN
+            - name: SLACK_APP_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: respondnow-secret
+                  key: SLACK_APP_TOKEN
+            - name: SLACK_INCIDENT_CHANNEL_ID
+              valueFrom:
+                secretKeyRef:
+                  name: respondnow-secret
+                  key: SLACK_INCIDENT_CHANNEL_ID
+            - name: DEFAULT_USER_EMAIL
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_USER_EMAIL
+            - name: DEFAULT_USER_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_USER_NAME
+            - name: DEFAULT_USER_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: respondnow-secret
+                  key: DEFAULT_USER_PASSWORD
+            - name: DEFAULT_ACCOUNT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_ACCOUNT_ID
+            - name: DEFAULT_ACCOUNT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_ACCOUNT_NAME
+            - name: DEFAULT_ORG_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_ORG_ID
+            - name: DEFAULT_ORG_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_ORG_NAME
+            - name: DEFAULT_PROJECT_ID
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_PROJECT_ID
+            - name: DEFAULT_PROJECT_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: respondnow-config
+                  key: DEFAULT_PROJECT_NAME
+          resources:
+            requests:
+              memory: "512Mi"
+              cpu: "250m"
+            limits:
+              memory: "1Gi"
+              cpu: "1000m"
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 90
+            periodSeconds: 10
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 60
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 3
