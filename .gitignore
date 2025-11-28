@@ -14,3 +14,6 @@ _vendor-*
 tmp/
 .env
 mkdocs/site
+
+server/target
+portal/node_modules
