@@ -40,21 +40,29 @@ const IncidentDetailsView: React.FC<IncidentDetailsViewProps> = props => {
               showDelete={false}
             />
           )}
-          <Button
-            onClick={() => {
-              window.open(
-                generateSlackChannelLink(
-                  incidentData?.incidentChannel?.slack?.teamDomain || '',
-                  incidentData?.channels?.[0].id || ''
-                ),
-                '_blank'
-              );
-            }}
-            variation={ButtonVariation.SECONDARY}
-            text="View Channel"
-            icon={<img src={SlackIcon} height={16} />}
-            disabled={!incidentData?.incidentChannel?.slack?.teamDomain || !incidentData?.channels?.[0].id}
-          />
+          {incidentData?.incidentChannel?.slack?.teamDomain && incidentData?.channels?.[0]?.id ? (
+            <Button
+              onClick={() => {
+                window.open(
+                  generateSlackChannelLink(
+                    incidentData?.incidentChannel?.slack?.teamDomain || '',
+                    incidentData?.channels?.[0].id || ''
+                  ),
+                  '_blank'
+                );
+              }}
+              variation={ButtonVariation.SECONDARY}
+              text="View Channel"
+              icon={<img src={SlackIcon} height={16} />}
+            />
+          ) : incidentData?.incidentUrl ? (
+            <Button
+              onClick={() => window.open(incidentData.incidentUrl, '_blank')}
+              variation={ButtonVariation.SECONDARY}
+              text="View Incident URL"
+              rightIcon="share"
+            />
+          ) : null}
         </Layout.Horizontal>
       }
     >

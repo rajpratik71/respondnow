@@ -3,13 +3,11 @@ import {
   Button,
   ButtonVariation,
   ConfirmationDialog,
-  Intent,
   Layout,
   Popover,
-  Menu,
   useToaster
 } from '@harnessio/uicore';
-import { Icon } from '@harnessio/icons';
+import { Menu, MenuItem, Intent } from '@blueprintjs/core';
 import { useQueryClient } from '@tanstack/react-query';
 import {
   useDeleteIncidentMutation,
@@ -144,7 +142,7 @@ const IncidentActions: React.FC<IncidentActionsProps> = ({
             content={
               <Menu>
                 {statusOptions.map(option => (
-                  <Menu.Item
+                  <MenuItem
                     key={option.value}
                     text={option.label}
                     onClick={() => handleStatusChange(option.value)}

@@ -2,6 +2,7 @@ package io.respondnow.controller;
 
 import io.respondnow.dto.incident.*;
 import io.respondnow.model.api.Pagination;
+import io.respondnow.model.incident.ChannelSource;
 import io.respondnow.model.incident.Incident;
 import io.respondnow.model.incident.Severity;
 import io.respondnow.model.incident.Status;
@@ -40,6 +41,15 @@ public class IncidentController {
     userDetails.setEmail(jwtUtil.getEmailFromToken(token));
     userDetails.setName(jwtUtil.getNameFromToken(token));
     userDetails.setUserName(jwtUtil.getUsernameFromToken(token));
+    
+    // Determine source from User-Agent header
+    String userAgent = request.getHeader("User-Agent");
+    if (userAgent != null && userAgent.toLowerCase().contains("mozilla")) {
+      userDetails.setSource(ChannelSource.Web);
+    } else {
+      userDetails.setSource(ChannelSource.API);
+    }
+    
     return userDetails;
   }
 

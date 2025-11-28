@@ -5,7 +5,7 @@
 export interface UserDetails {
   email?: string;
   name?: string;
-  source?: 'Slack';
+  source?: 'Slack' | 'Web' | 'API';
   userId?: string;
   userName?: string;
 }

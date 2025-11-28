@@ -15,7 +15,7 @@ export interface Timeline {
   message?: string;
   previousState?: string;
   slack?: Slack;
-  type: 'Comment' | 'Incident_Created' | 'Roles' | 'Severity' | 'Slack_Channel_Created' | 'Status' | 'Summary';
+  type: 'Comment' | 'Incident_Created' | 'Incident_Deleted' | 'Incident_Acknowledged' | 'Roles' | 'Severity' | 'Slack_Channel_Created' | 'Status' | 'Summary';
   /**
    * @format int64
    */

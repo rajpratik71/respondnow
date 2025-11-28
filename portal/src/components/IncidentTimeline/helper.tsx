@@ -29,16 +29,23 @@ export function getTimelinePropsBasedOnIncidentData(
     return undefined;
   }
 
-  const SlackIconRenderer = (
+  const source = timeline.userDetails?.source || 'Web';
+  const isSlackSource = source === 'Slack';
+  
+  const SourceIconRenderer = isSlackSource ? (
     <div className={css.slackIcon}>
       <img src={SlackIcon} height={14} width={14} alt="Slack" />
+    </div>
+  ) : (
+    <div className={css.slackIcon}>
+      <Icon name="globe" size={14} color={Color.PRIMARY_7} />
     </div>
   );
 
   switch (timeline.type) {
     case 'Incident_Created':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -52,6 +59,9 @@ export function getTimelinePropsBasedOnIncidentData(
             </Text>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
               {getString('incident').toLowerCase()}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -84,7 +94,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Slack_Channel_Created':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
             {getString('incidentChannelCreated')}
@@ -131,17 +141,17 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Comment':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
               {userName}
             </Text>
             <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
-              {getString('commentedIn')}
+              added a comment
             </Text>
-            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
-              {getString('slackChannel')}
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -153,7 +163,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Severity':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -164,6 +174,9 @@ export function getTimelinePropsBasedOnIncidentData(
             </Text>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
               {getString('incident')} {getString('severity')}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -177,7 +190,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Status':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -188,6 +201,9 @@ export function getTimelinePropsBasedOnIncidentData(
             </Text>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
               {getString('incident')} {getString('status')}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -201,7 +217,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Summary':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -212,6 +228,9 @@ export function getTimelinePropsBasedOnIncidentData(
             </Text>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
               {getString('incident')} {getString('summary')}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -244,7 +263,7 @@ export function getTimelinePropsBasedOnIncidentData(
       };
     case 'Roles':
       return {
-        icon: SlackIconRenderer,
+        icon: SourceIconRenderer,
         headerContent: (
           <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
@@ -255,6 +274,9 @@ export function getTimelinePropsBasedOnIncidentData(
             </Text>
             <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.GREY_800}>
               {getString('incident')} {getString('keyMembers')}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
             </Text>
           </Layout.Horizontal>
         ),
@@ -301,6 +323,42 @@ export function getTimelinePropsBasedOnIncidentData(
             </Layout.Vertical>
           </Layout.Horizontal>
         )
+      };
+    case 'Incident_Deleted':
+      return {
+        icon: SourceIconRenderer,
+        headerContent: (
+          <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
+              {userName}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+              deleted the incident
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
+            </Text>
+          </Layout.Horizontal>
+        ),
+        bodyContent: null
+      };
+    case 'Incident_Acknowledged':
+      return {
+        icon: SourceIconRenderer,
+        headerContent: (
+          <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-start' }} style={{ gap: '0.2rem' }}>
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.PRIMARY_7}>
+              {userName}
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_800}>
+              acknowledged the incident
+            </Text>
+            <Text font={{ variation: FontVariation.SMALL }} color={Color.GREY_500}>
+              via {source}
+            </Text>
+          </Layout.Horizontal>
+        ),
+        bodyContent: null
       };
     default:
       return undefined;

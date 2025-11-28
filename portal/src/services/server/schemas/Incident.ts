@@ -48,6 +48,7 @@ export interface Incident {
   tags?: string[];
   timelines?: Timeline[];
   type?: 'Availability' | 'Latency' | 'Other' | 'Security';
+  incidentUrl?: string;
   /**
    * @format int64
    */

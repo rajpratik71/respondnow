@@ -10,6 +10,7 @@ export interface CreateIncidentRequestBody {
   summary: string;
   status?: 'Started' | 'Acknowledged' | 'Investigating' | 'Identified' | 'Mitigated' | 'Resolved';
   tags?: string[];
+  incidentUrl?: string;
 }
 
 export interface CreateIncidentQueryParams {

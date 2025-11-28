@@ -51,6 +51,7 @@ public class Incident {
   private IncidentChannel incidentChannel;
   private List<Conference> conferenceDetails;
   private List<Attachment> attachments;
+  private String incidentUrl;
   private Long createdAt;
   private Long updatedAt;
   private UserDetails createdBy;

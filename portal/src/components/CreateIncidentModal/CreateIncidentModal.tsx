@@ -71,7 +71,8 @@ const CreateIncidentModal: React.FC<CreateIncidentModalProps> = ({ isOpen, onClo
     description: '',
     severity: 'SEV1',
     type: 'Availability',
-    tags: []
+    tags: [],
+    incidentUrl: ''
   };
 
   return (
@@ -117,6 +118,11 @@ const CreateIncidentModal: React.FC<CreateIncidentModalProps> = ({ isOpen, onClo
                 name="description"
                 label="Description (Optional)"
                 placeholder="Provide detailed description"
+              />
+              <FormInput.Text
+                name="incidentUrl"
+                label="Incident URL (Optional)"
+                placeholder="Enter external URL for this incident (e.g., runbook, dashboard)"
               />
               <Layout.Horizontal spacing="medium" flex={{ justifyContent: 'flex-end' }}>
                 <Button
