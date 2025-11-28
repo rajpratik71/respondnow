@@ -1,11 +1,11 @@
 import React from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
-import { Button, ButtonVariation, Layout } from '@harnessio/uicore';
+import { Button, ButtonVariation, Layout, useToaster } from '@harnessio/uicore';
 import { Color } from '@harnessio/design-system';
 import { Fallback } from '@errors';
 import { DefaultLayout } from '@layouts';
-import { Incident } from '@services/server';
-import { generateSlackChannelLink } from '@utils';
+import { Incident, useExportSinglePDFMutation, downloadBlob } from '@services/server';
+import { generateSlackChannelLink, getScope } from '@utils';
 import { IncidentActions } from '@components/IncidentActions';
 import SlackIcon from '@images/slack-mono.svg';
 import DetailsSection from './sections/DetailsSection';
@@ -19,8 +19,33 @@ interface IncidentDetailsViewProps {
 
 const IncidentDetailsView: React.FC<IncidentDetailsViewProps> = props => {
   const { incidentData, incidentDataLoading, onActionComplete } = props;
+  const { showSuccess, showError } = useToaster();
+  const scope = getScope();
 
   const isIncidentPresent = !!incidentData;
+
+  // Use backend API for PDF export
+  const { mutate: exportPDF, isLoading: isExporting } = useExportSinglePDFMutation(
+    {
+      queryParams: scope,
+      incidentId: incidentData?.identifier || ''
+    },
+    {
+      onSuccess: (blob) => {
+        const filename = `incident_${incidentData?.identifier}_${new Date().toISOString().split('T')[0]}.txt`;
+        downloadBlob(blob, filename);
+        showSuccess('Incident exported to PDF');
+      },
+      onError: () => {
+        showError('Failed to export incident to PDF');
+      }
+    }
+  );
+
+  const handleExportPDF = () => {
+    if (!incidentData) return;
+    exportPDF();
+  };
 
   return (
     <DefaultLayout
@@ -34,11 +59,21 @@ const IncidentDetailsView: React.FC<IncidentDetailsViewProps> = props => {
       toolbar={
         <Layout.Horizontal spacing="medium" flex={{ alignItems: 'center' }}>
           {incidentData && (
-            <IncidentActions
-              incident={incidentData}
-              onActionComplete={onActionComplete}
-              showDelete={false}
-            />
+            <>
+              <Button
+                variation={ButtonVariation.SECONDARY}
+                text="Export PDF"
+                icon="document"
+                onClick={handleExportPDF}
+                loading={isExporting}
+                disabled={isExporting}
+              />
+              <IncidentActions
+                incident={incidentData}
+                onActionComplete={onActionComplete}
+                showDelete={false}
+              />
+            </>
           )}
           {incidentData?.incidentChannel?.slack?.teamDomain && incidentData?.channels?.[0]?.id ? (
             <Button
