@@ -34,6 +34,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
         // Allow Swagger UI and API docs endpoint to be accessed without authentication
         .antMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html")
         .permitAll()
+        // Allow actuator endpoints without authentication
+        .antMatchers("/actuator/**")
+        .permitAll()
         .anyRequest()
         .authenticated() // All other requests require authentication
         .and()

@@ -16,6 +16,14 @@ slack:
   botToken: ${SLACK_BOT_TOKEN:botToken}
   appToken: ${SLACK_APP_TOKEN:appToken}
   incidentChannelID: ${SLACK_INCIDENT_CHANNEL_ID:slackIncidentChannelId}
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
 
 hierarchy:
   defaultUser:
