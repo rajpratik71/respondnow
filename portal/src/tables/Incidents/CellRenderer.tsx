@@ -3,6 +3,7 @@ import { CellProps, Renderer } from 'react-table';
 import { Avatar, Button, ButtonSize, ButtonVariation, Container, Layout, Text } from '@harnessio/uicore';
 import { Link } from 'react-router-dom';
 import { Color, FontVariation } from '@harnessio/design-system';
+import { Icon } from '@harnessio/icons';
 import { isEmpty } from 'lodash-es';
 import { Incident } from '@services/server';
 import { useStrings } from '@strings';
@@ -109,12 +110,26 @@ export const IncidentReportedBy: CellRendererType = ({ row }) => {
   const { getString } = useStrings();
   const { createdBy, createdAt } = row.original;
   const name = createdBy?.name || createdBy?.userName;
+  const source = createdBy?.source || 'Web';
+  const isSlackSource = source === 'Slack';
+  
   return (
     <Container flex={{ alignItems: 'center', justifyContent: 'flex-start' }} width="100%">
-      <Avatar borderRadius={0} src={SlackIcon} name={createdBy?.name} hoverCard={false} size="small" />
+      {isSlackSource ? (
+        <Avatar borderRadius={0} src={SlackIcon} name={createdBy?.name} hoverCard={false} size="small" />
+      ) : (
+        <Container 
+          width={24} 
+          height={24} 
+          flex={{ alignItems: 'center', justifyContent: 'center' }}
+          style={{ borderRadius: 4, backgroundColor: '#E3E7EE' }}
+        >
+          <Icon name="globe" size={14} color={Color.PRIMARY_7} />
+        </Container>
+      )}
       <Layout.Vertical margin={{ left: 'xsmall' }}>
         <Text font={{ variation: FontVariation.SMALL }} lineClamp={1} color={Color.GREY_700}>
-          {name ? `${name}${getString('viaSlack')}` : getString('abbv.na')}
+          {name ? `${name}, via ${source}` : getString('abbv.na')}
         </Text>
         {createdAt && (
           <Text font={{ variation: FontVariation.TINY }} color={Color.GREY_400}>
@@ -157,27 +172,54 @@ export const IncidentDuration: CellRendererType = ({ row }) => {
 };
 
 export const IncidentCTA: CellRendererType = ({ row }) => {
-  const { channels, incidentChannel } = row.original;
+  const { channels, incidentChannel, incidentUrl } = row.original;
   const { getString } = useStrings();
-  return (
-    <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-end' }}>
-      <Button
-        icon={<img src={SlackIconMono} height={12} />}
-        disabled={!incidentChannel?.slack?.teamDomain || !channels?.[0].id}
-        onClick={() => {
-          window.open(
-            generateSlackChannelLink(incidentChannel?.slack?.teamDomain || '', channels?.[0].id || ''),
-            '_blank'
-          );
-        }}
-        size={ButtonSize.SMALL}
-        text={
-          <Text font={{ variation: FontVariation.SMALL_BOLD }} style={{ lineHeight: 1 }} color={Color.PRIMARY_7}>
-            {getString('viewChannel')}
-          </Text>
-        }
-        variation={ButtonVariation.SECONDARY}
-      />
-    </Layout.Horizontal>
-  );
+  
+  const hasSlackChannel = incidentChannel?.slack?.teamDomain && channels?.[0]?.id;
+  
+  // Show Slack button if Slack is configured
+  if (hasSlackChannel) {
+    return (
+      <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Button
+          icon={<img src={SlackIconMono} height={12} />}
+          onClick={() => {
+            window.open(
+              generateSlackChannelLink(incidentChannel?.slack?.teamDomain || '', channels?.[0].id || ''),
+              '_blank'
+            );
+          }}
+          size={ButtonSize.SMALL}
+          text={
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} style={{ lineHeight: 1 }} color={Color.PRIMARY_7}>
+              {getString('viewChannel')}
+            </Text>
+          }
+          variation={ButtonVariation.SECONDARY}
+        />
+      </Layout.Horizontal>
+    );
+  }
+  
+  // Show incident URL button if available
+  if (incidentUrl) {
+    return (
+      <Layout.Horizontal flex={{ alignItems: 'center', justifyContent: 'flex-end' }}>
+        <Button
+          rightIcon="share"
+          onClick={() => window.open(incidentUrl, '_blank')}
+          size={ButtonSize.SMALL}
+          text={
+            <Text font={{ variation: FontVariation.SMALL_BOLD }} style={{ lineHeight: 1 }} color={Color.PRIMARY_7}>
+              View URL
+            </Text>
+          }
+          variation={ButtonVariation.SECONDARY}
+        />
+      </Layout.Horizontal>
+    );
+  }
+  
+  // No external link available
+  return null;
 };
