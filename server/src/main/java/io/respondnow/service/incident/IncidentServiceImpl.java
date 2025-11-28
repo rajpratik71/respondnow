@@ -103,6 +103,7 @@ public class IncidentServiceImpl implements IncidentService {
     newIncident.setFunctionalities(request.getFunctionalities());
     newIncident.setEnvironments(request.getEnvironments());
     newIncident.setAttachments(request.getAttachments());
+    newIncident.setIncidentUrl(request.getIncidentUrl());
     newIncident.setCreatedBy(currentUser);
     newIncident.setActive(true);
     newIncident.setCreatedAt(createdAt);

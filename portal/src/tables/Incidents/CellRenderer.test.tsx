@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
-import { IncidentReportedBy, IncidentCTA } from './CellRenderer';
+import { IncidentReportedBy, IncidentCTA, IncidentLink } from './CellRenderer';
 import { Incident } from '@services/server';
 
 // Mock dependencies
@@ -248,6 +248,75 @@ describe('CellRenderer', () => {
 
       expect(screen.queryByText('View Channel')).not.toBeInTheDocument();
       expect(screen.getByText('View URL')).toBeInTheDocument();
+    });
+  });
+
+  describe('IncidentLink', () => {
+    it('should display incident URL as a clickable hyperlink', () => {
+      const row = createMockRow({
+        incidentUrl: 'https://example.com/incident'
+      });
+
+      render(<IncidentLink row={row} />);
+
+      expect(screen.getByText('https://example.com/incident')).toBeInTheDocument();
+      expect(screen.getByTestId('icon-link')).toBeInTheDocument();
+      expect(screen.getByTestId('icon-share')).toBeInTheDocument();
+    });
+
+    it('should truncate long URLs', () => {
+      const longUrl = 'https://example.com/very/long/path/to/incident/details/page';
+      const row = createMockRow({
+        incidentUrl: longUrl
+      });
+
+      render(<IncidentLink row={row} />);
+
+      // URL should be truncated to 30 chars + '...'
+      expect(screen.getByText('https://example.com/very/long/...')).toBeInTheDocument();
+    });
+
+    it('should show full URL in title attribute', () => {
+      const longUrl = 'https://example.com/very/long/path/to/incident/details/page';
+      const row = createMockRow({
+        incidentUrl: longUrl
+      });
+
+      render(<IncidentLink row={row} />);
+
+      const linkText = screen.getByText('https://example.com/very/long/...');
+      expect(linkText).toHaveAttribute('title', longUrl);
+    });
+
+    it('should not render anything when incidentUrl is not provided', () => {
+      const row = createMockRow({
+        incidentUrl: undefined
+      });
+
+      const { container } = render(<IncidentLink row={row} />);
+
+      expect(container.firstChild).toBeNull();
+    });
+
+    it('should not render anything when incidentUrl is empty string', () => {
+      const row = createMockRow({
+        incidentUrl: ''
+      });
+
+      const { container } = render(<IncidentLink row={row} />);
+
+      expect(container.firstChild).toBeNull();
+    });
+
+    it('should have clickable styling', () => {
+      const row = createMockRow({
+        incidentUrl: 'https://example.com/incident'
+      });
+
+      render(<IncidentLink row={row} />);
+
+      const linkText = screen.getByText('https://example.com/incident');
+      expect(linkText).toHaveStyle({ textDecoration: 'underline' });
     });
   });
 });

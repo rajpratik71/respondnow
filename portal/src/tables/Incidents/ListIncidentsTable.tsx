@@ -19,31 +19,37 @@ const IncidentListTable: React.FC<IncidentsTableProps> = props => {
         Header: getString('incident'),
         id: 'name',
         Cell: CellRenderer.IncidentsName,
-        width: '35%'
+        width: '30%'
       },
       {
         Header: getString('reportedBy'),
         id: 'reportedBy',
         Cell: CellRenderer.IncidentReportedBy,
-        width: '20%'
+        width: '18%'
       },
       {
         Header: getString('status'),
         id: 'status',
         Cell: CellRenderer.IncidentStatus,
-        width: '15%'
+        width: '10%'
       },
       {
         Header: getString('duration'),
         id: 'duration',
         Cell: CellRenderer.IncidentDuration,
-        width: '15%'
+        width: '12%'
+      },
+      {
+        Header: getString('links'),
+        id: 'links',
+        Cell: CellRenderer.IncidentLink,
+        width: '18%'
       },
       {
         Header: '',
         id: 'cta',
         Cell: CellRenderer.IncidentCTA,
-        width: '15%'
+        width: '12%'
       }
     ];
     // eslint-disable-next-line react-hooks/exhaustive-deps
