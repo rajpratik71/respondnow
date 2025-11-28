@@ -106,3 +106,16 @@ export type {
   UpdateIncidentSeverityProps
 } from './hooks/useUpdateIncidentSeverityMutation';
 export { updateIncidentSeverity, useUpdateIncidentSeverityMutation } from './hooks/useUpdateIncidentSeverityMutation';
+
+export type {
+  ExportRequestBody,
+  ExportQueryParams,
+  UseExportCSVProps,
+  UseExportSinglePDFProps
+} from './hooks/useExportIncidentsMutation';
+export {
+  useExportCSVMutation,
+  useExportPDFMutation,
+  useExportSinglePDFMutation,
+  downloadBlob
+} from './hooks/useExportIncidentsMutation';

@@ -448,6 +448,15 @@ public class IncidentServiceImpl implements IncidentService {
     return mongoTemplate.findOne(query, Incident.class);
   }
 
+  public List<Incident> getIncidentsByIds(List<String> ids) {
+    if (ids == null || ids.isEmpty()) {
+      return Collections.emptyList();
+    }
+    Criteria criteria = Criteria.where("identifier").in(ids);
+    Query query = new Query(criteria);
+    return mongoTemplate.find(query, Incident.class);
+  }
+
   public List<Incident> listIncidents(Query query) {
     return mongoTemplate.find(query, Incident.class);
   }

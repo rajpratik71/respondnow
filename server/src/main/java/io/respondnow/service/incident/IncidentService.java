@@ -13,6 +13,8 @@ public interface IncidentService {
 
   Incident getIncidentByIdentifier(String id);
 
+  List<Incident> getIncidentsByIds(List<String> ids);
+
   List<Incident> listIncidents(Query query);
 
   long countIncidents(Query query);
