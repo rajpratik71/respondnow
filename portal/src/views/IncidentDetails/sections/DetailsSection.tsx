@@ -2,6 +2,7 @@ import React from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { Avatar, Card, Container, Layout, Text } from '@harnessio/uicore';
 import { Color, FontVariation } from '@harnessio/design-system';
+import { Icon } from '@harnessio/icons';
 import { Fallback } from '@errors';
 import { useStrings } from '@strings';
 import SeverityBadge from '@components/SeverityBadge';
@@ -121,6 +122,30 @@ const DetailsSection: React.FC<DetailsSectionProps> = props => {
             )}
           </Layout.Horizontal>
         </Layout.Vertical>
+        {incidentData?.incidentUrl && (
+          <Layout.Vertical
+            flex={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
+            className={css.internalContainers}
+            width="100%"
+          >
+            <Text font={{ variation: FontVariation.H6 }}>{getString('links')}</Text>
+            <Layout.Horizontal
+              flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+              style={{ gap: '0.25rem', cursor: 'pointer' }}
+              onClick={() => window.open(incidentData.incidentUrl, '_blank')}
+            >
+              <Icon name="link" size={12} color={Color.PRIMARY_7} />
+              <Text 
+                font={{ variation: FontVariation.SMALL }} 
+                color={Color.PRIMARY_7}
+                style={{ textDecoration: 'underline' }}
+              >
+                {incidentData.incidentUrl}
+              </Text>
+              <Icon name="share" size={10} color={Color.PRIMARY_7} />
+            </Layout.Horizontal>
+          </Layout.Vertical>
+        )}
       </Layout.Vertical>
     </Card>
   );

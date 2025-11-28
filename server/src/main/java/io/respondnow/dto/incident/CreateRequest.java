@@ -51,6 +51,9 @@ public class CreateRequest extends ResourceDetails {
   @JsonProperty("attachments")
   private List<Attachment> attachments;
 
+  @JsonProperty("incidentUrl")
+  private String incidentUrl;
+
   @Getter
   @Setter
   @JsonInclude(JsonInclude.Include.NON_NULL)

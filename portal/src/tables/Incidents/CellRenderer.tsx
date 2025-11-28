@@ -171,6 +171,38 @@ export const IncidentDuration: CellRendererType = ({ row }) => {
   );
 };
 
+export const IncidentLink: CellRendererType = ({ row }) => {
+  const { incidentUrl } = row.original;
+  
+  if (!incidentUrl) {
+    return null;
+  }
+
+  // Truncate URL for display if too long
+  const displayUrl = incidentUrl.length > 30 
+    ? `${incidentUrl.substring(0, 30)}...` 
+    : incidentUrl;
+
+  return (
+    <Layout.Horizontal 
+      flex={{ alignItems: 'center', justifyContent: 'flex-start' }} 
+      style={{ gap: '0.25rem', cursor: 'pointer' }}
+      onClick={() => window.open(incidentUrl, '_blank')}
+    >
+      <Icon name="link" size={12} color={Color.PRIMARY_7} />
+      <Text 
+        font={{ variation: FontVariation.SMALL }} 
+        color={Color.PRIMARY_7}
+        style={{ textDecoration: 'underline' }}
+        title={incidentUrl}
+      >
+        {displayUrl}
+      </Text>
+      <Icon name="share" size={10} color={Color.PRIMARY_7} />
+    </Layout.Horizontal>
+  );
+};
+
 export const IncidentCTA: CellRendererType = ({ row }) => {
   const { channels, incidentChannel, incidentUrl } = row.original;
   const { getString } = useStrings();
