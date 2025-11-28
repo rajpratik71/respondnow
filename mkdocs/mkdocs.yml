@@ -55,6 +55,7 @@ nav:
       - Create Slack App: getting-started/create-slack-app-with-app-manifest.md
       - Deploy RespondNow Server: getting-started/deploy-rn-server-with-helm.md
       - Verify RespondNow Portal: getting-started/verify-rn-portal.md
+      - Architecture: introduction/architecture.md
   - User Guide:
       - Slack-Based Incident Lifecycle Management:
           - Create Incidents: user-guide/slack-based-incident-management/create-incidents.md
