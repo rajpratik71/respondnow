@@ -84,19 +84,31 @@ const IncidentListTable: React.FC<SelectableIncidentsTableProps> = props => {
         Header: getString('duration'),
         id: 'duration',
         Cell: CellRenderer.IncidentDuration,
-        width: '12%'
+        width: selectable ? '10%' : '11%'
+      },
+      {
+        Header: 'Created By',
+        id: 'createdBy',
+        Cell: CellRenderer.IncidentCreatedBy,
+        width: selectable ? '12%' : '13%'
+      },
+      {
+        Header: 'Updated At',
+        id: 'updatedAt',
+        Cell: CellRenderer.IncidentUpdatedAt,
+        width: selectable ? '12%' : '13%'
       },
       {
         Header: getString('links'),
         id: 'links',
         Cell: CellRenderer.IncidentLink,
-        width: '16%'
+        width: selectable ? '12%' : '13%'
       },
       {
         Header: '',
         id: 'cta',
         Cell: CellRenderer.IncidentCTA,
-        width: '12%'
+        width: selectable ? '8%' : '9%'
       }
     ];
 

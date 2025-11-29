@@ -20,6 +20,11 @@ export interface ExportQueryParams {
   projectIdentifier?: string;
 }
 
+export interface ExportSingleParams {
+  incidentId: string;
+  queryParams: ExportQueryParams;
+}
+
 interface ExportResponse {
   data: Blob;
   totalCount: number;
@@ -135,19 +140,48 @@ export function useExportPDFMutation(
   );
 }
 
-export interface UseExportSinglePDFProps {
-  queryParams: ExportQueryParams;
-  incidentId: string;
-}
-
 export function useExportSinglePDFMutation(
-  props: UseExportSinglePDFProps,
+  params: ExportSingleParams,
   options?: UseMutationOptions<Blob, Error, void>
 ) {
-  return useMutation<Blob, Error, void>(
-    () => exportSingleIncidentToPDF(props.incidentId, props.queryParams),
-    options
-  );
+  return useMutation<Blob, Error, void>(() => exportSingleIncidentToPDF(params.incidentId, params.queryParams), options);
+}
+
+// Combined export: PDF + Evidence
+async function exportCombined(params: ExportSingleParams): Promise<Blob> {
+  const queryParams = new URLSearchParams();
+  if (params.queryParams.accountIdentifier) {
+    queryParams.append('accountIdentifier', params.queryParams.accountIdentifier);
+  }
+  if (params.queryParams.orgIdentifier) {
+    queryParams.append('orgIdentifier', params.queryParams.orgIdentifier);
+  }
+  if (params.queryParams.projectIdentifier) {
+    queryParams.append('projectIdentifier', params.queryParams.projectIdentifier);
+  }
+
+  const token = localStorage.getItem('accessToken');
+
+  const response = await fetch(`/api/incident/export/combined/${params.incidentId}?${queryParams.toString()}`, {
+    method: 'GET',
+    headers: {
+      ...(token ? { Authorization: `Bearer ${token}` } : {})
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Failed to export incident with evidence');
+  }
+
+  return response.blob();
+}
+
+export function useExportCombinedMutation(
+  params: ExportSingleParams,
+  options?: UseMutationOptions<Blob, Error, void>
+) {
+  return useMutation<Blob, Error, void>(() => exportCombined(params), options);
 }
 
 // Helper function to download blob as file

@@ -249,4 +249,46 @@ public class ExportController {
         .format(Instant.now().atZone(java.time.ZoneId.systemDefault()));
     return prefix + "_" + timestamp + "." + extension;
   }
+
+  @Operation(summary = "Export incident with PDF and Evidence", 
+             description = "Export a single incident as PDF with timeline and all evidence in a single ZIP file")
+  @GetMapping("/combined/{incidentId}")
+  public ResponseEntity<byte[]> exportIncidentWithEvidence(
+      @PathVariable String incidentId,
+      @Parameter(name = "accountIdentifier", description = "Account identifier", in = ParameterIn.QUERY, required = true)
+      @RequestParam String accountIdentifier,
+      @Parameter(name = "orgIdentifier", description = "Organization identifier", in = ParameterIn.QUERY)
+      @RequestParam(required = false) String orgIdentifier,
+      @Parameter(name = "projectIdentifier", description = "Project identifier", in = ParameterIn.QUERY)
+      @RequestParam(required = false) String projectIdentifier) {
+    
+    try {
+      Incident incident = incidentService.getIncidentByIdentifier(incidentId);
+      
+      if (incident == null) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+            .body(("Incident not found with ID: " + incidentId).getBytes());
+      }
+
+      // Generate combined export using ExportService
+      byte[] combinedZip = exportService.exportIncidentWithEvidence(
+          incident, 
+          incident.getId()
+      );
+
+      String dateStr = DateTimeFormatter.ofPattern("yyyyMMdd")
+          .format(Instant.ofEpochMilli(incident.getCreatedAt()).atZone(java.time.ZoneId.systemDefault()));
+      String filename = String.format("incident-%s-%s-complete.zip", incident.getIdentifier(), dateStr);
+
+      HttpHeaders headers = new HttpHeaders();
+      headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+      headers.setContentDispositionFormData("attachment", filename);
+      headers.set("X-Content-Type-Options", "nosniff");
+
+      return new ResponseEntity<>(combinedZip, headers, HttpStatus.OK);
+    } catch (Exception e) {
+      return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+          .body(("Error exporting incident: " + e.getMessage()).getBytes());
+    }
+  }
 }

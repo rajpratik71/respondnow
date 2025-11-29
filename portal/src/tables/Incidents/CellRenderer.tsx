@@ -14,6 +14,7 @@ import StatusBadge from '@components/StatusBadge';
 import SlackIcon from '@images/slack.svg';
 import SlackIconMono from '@images/slack-mono.svg';
 import Duration from '@components/Duration';
+import moment from 'moment';
 import css from '../CommonTableStyles.module.scss';
 
 type CellRendererType = Renderer<CellProps<Incident>>;
@@ -254,4 +255,39 @@ export const IncidentCTA: CellRendererType = ({ row }) => {
   
   // No external link available
   return null;
+};
+
+export const IncidentCreatedBy: CellRendererType = ({ row }) => {
+  const { createdBy } = row.original;
+  const displayName = createdBy?.name || createdBy?.userName || '-';
+  
+  return (
+    <Layout.Horizontal
+      height={66}
+      flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+      spacing="small"
+    >
+      {createdBy && (
+        <Avatar name={displayName} size="small" hoverCard={false} />
+      )}
+      <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }} lineClamp={1}>
+        {displayName}
+      </Text>
+    </Layout.Horizontal>
+  );
+};
+
+export const IncidentUpdatedAt: CellRendererType = ({ row }) => {
+  const { updatedAt } = row.original;
+  
+  return (
+    <Layout.Horizontal
+      height={66}
+      flex={{ alignItems: 'center', justifyContent: 'flex-start' }}
+    >
+      <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }}>
+        {updatedAt ? moment(updatedAt * 1000).format('MMM D, YYYY h:mm A') : '-'}
+      </Text>
+    </Layout.Horizontal>
+  );
 };

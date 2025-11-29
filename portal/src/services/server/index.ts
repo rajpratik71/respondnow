@@ -110,6 +110,7 @@ export { updateIncidentSeverity, useUpdateIncidentSeverityMutation } from './hoo
 export type {
   ExportRequestBody,
   ExportQueryParams,
+  ExportSingleParams,
   UseExportCSVProps,
   UseExportSinglePDFProps
 } from './hooks/useExportIncidentsMutation';
@@ -117,5 +118,6 @@ export {
   useExportCSVMutation,
   useExportPDFMutation,
   useExportSinglePDFMutation,
+  useExportCombinedMutation,
   downloadBlob
 } from './hooks/useExportIncidentsMutation';

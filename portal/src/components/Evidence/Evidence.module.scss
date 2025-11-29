@@ -1,0 +1,36 @@
+.evidenceContainer {
+  margin: 0;
+  padding: 0;
+}
+
+.evidenceItem {
+  background: #ffffff;
+  border: 1px solid #d9dae5;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+
+  &:hover {
+    border-color: #b0b1c3;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  }
+}
+
+.textArea {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #d9dae5;
+  border-radius: 4px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: vertical;
+  outline: none;
+  transition: border-color 0.2s ease;
+
+  &:focus {
+    border-color: #0278d5;
+  }
+
+  &::placeholder {
+    color: #9293ab;
+  }
+}

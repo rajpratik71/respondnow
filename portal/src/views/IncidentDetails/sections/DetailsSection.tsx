@@ -10,6 +10,7 @@ import StatusBadge from '@components/StatusBadge';
 import { Incident } from '@services/server';
 import Duration from '@components/Duration';
 import SlackIcon from '@images/slack.svg';
+import moment from 'moment';
 import css from '../IncidentDetails.module.scss';
 
 interface DetailsSectionProps {
@@ -143,6 +144,58 @@ const DetailsSection: React.FC<DetailsSectionProps> = props => {
                 {incidentData.incidentUrl}
               </Text>
               <Icon name="share" size={10} color={Color.PRIMARY_7} />
+            </Layout.Horizontal>
+          </Layout.Vertical>
+        )}
+
+        {/* Audit Information */}
+        {incidentData && (
+          <Layout.Vertical
+            flex={{ alignItems: 'flex-start', justifyContent: 'flex-start' }}
+            className={css.internalContainers}
+            width="100%"
+            style={{ borderTop: '1px solid #d9dae5', paddingTop: '1rem', marginTop: '0.5rem' }}
+          >
+            <Text font={{ variation: FontVariation.H6 }} margin={{ bottom: 'small' }}>
+              Audit Information
+            </Text>
+            <Layout.Horizontal width="100%" style={{ gap: '2rem', flexWrap: 'wrap' }}>
+              <Layout.Vertical spacing="xsmall" style={{ minWidth: '150px' }}>
+                <Text color={Color.GREY_500} font={{ size: 'small', weight: 'semi-bold' }}>
+                  Created By
+                </Text>
+                <Text color={Color.GREY_900}>
+                  {incidentData.createdBy?.name || incidentData.createdBy?.userName || '-'}
+                </Text>
+              </Layout.Vertical>
+              <Layout.Vertical spacing="xsmall" style={{ minWidth: '150px' }}>
+                <Text color={Color.GREY_500} font={{ size: 'small', weight: 'semi-bold' }}>
+                  Created At
+                </Text>
+                <Text color={Color.GREY_900}>
+                  {incidentData.createdAt ? moment(incidentData.createdAt * 1000).format('MMM D, YYYY h:mm A') : '-'}
+                </Text>
+              </Layout.Vertical>
+              {incidentData.updatedBy && (
+                <>
+                  <Layout.Vertical spacing="xsmall" style={{ minWidth: '150px' }}>
+                    <Text color={Color.GREY_500} font={{ size: 'small', weight: 'semi-bold' }}>
+                      Updated By
+                    </Text>
+                    <Text color={Color.GREY_900}>
+                      {incidentData.updatedBy?.name || incidentData.updatedBy?.userName || '-'}
+                    </Text>
+                  </Layout.Vertical>
+                  <Layout.Vertical spacing="xsmall" style={{ minWidth: '150px' }}>
+                    <Text color={Color.GREY_500} font={{ size: 'small', weight: 'semi-bold' }}>
+                      Updated At
+                    </Text>
+                    <Text color={Color.GREY_900}>
+                      {incidentData.updatedAt ? moment(incidentData.updatedAt * 1000).format('MMM D, YYYY h:mm A') : '-'}
+                    </Text>
+                  </Layout.Vertical>
+                </>
+              )}
             </Layout.Horizontal>
           </Layout.Vertical>
         )}
