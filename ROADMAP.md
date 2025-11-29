@@ -3,6 +3,19 @@
 ## 🎯 Vision
 A comprehensive, multi-tenant, multi-user, multi-source incident management platform that integrates with alerting systems, collaboration tools, and monitoring infrastructure to provide end-to-end incident lifecycle management.
 
+## 📊 Progress Overview
+**Last Updated**: November 29, 2025
+
+- ✅ **Completed**: 65+ features across core incident management, security, evidence system, user/group management, and infrastructure
+- 🚧 **In Progress**: Multi-tenancy, advanced automation, and monitoring integrations
+- 📅 **Planned**: AI features, knowledge management, enterprise integrations (2026-2027)
+
+### Key Milestones Achieved
+- **v0.1.0-upstream** (Nov 2024): Foundation with authentication, incident APIs, Slack integration
+- **v0.2.0** (Nov 2025): Full incident lifecycle, exports, Kubernetes/Helm deployments
+- **v0.3.0** (Nov 2025): Testing framework, evidence management with GridFS
+- **Current** (Nov 2025): Complete RBAC, user/group management, audit logs, metrics dashboard
+
 ---
 
 ## ✅ Completed Features
@@ -44,6 +57,43 @@ A comprehensive, multi-tenant, multi-user, multi-source incident management plat
 - [x] JWT-based authentication
 - [x] Secure token management
 - [x] API request authentication
+- [x] Security audit logging for login attempts
+- [x] Admin activation workflow for new users
+
+### Evidence & Attachments
+- [x] Evidence management system with file upload
+- [x] GridFS storage integration for binary files
+- [x] Text evidence support
+- [x] Evidence viewing, deletion, and download
+- [x] ZIP export for batch evidence downloads
+- [x] Full auditing for evidence (CreatedBy, UpdatedBy, timestamps)
+
+### User & Group Management
+- [x] Complete user CRUD operations
+- [x] Complete group CRUD operations
+- [x] Role-based access control (ADMIN, MANAGER, RESPONDER, VIEWER)
+- [x] User profile self-service editing
+- [x] Group membership management
+- [x] Role assignment and management
+- [x] User activation/deactivation controls
+
+### Audit & Metrics
+- [x] Comprehensive audit log system
+- [x] Real-time incident metrics dashboard
+- [x] Time-based filtering (7 days, 30 days, All Time)
+- [x] Incident count and status tracking
+
+### Developer Tools
+- [x] Swagger UI with JWT authentication
+- [x] OpenAPI documentation
+- [x] API testing interface with persistent authorization
+
+### Deployment & Infrastructure
+- [x] Helm charts for Kubernetes (portal, server, MongoDB)
+- [x] Docker Compose for local development
+- [x] Kubernetes manifests (deployments, services, ingress)
+- [x] ConfigMaps and Secrets management
+- [x] Testing framework with JaCoCo coverage
 
 ---
 
@@ -60,16 +110,17 @@ A comprehensive, multi-tenant, multi-user, multi-source incident management plat
 - [ ] Resource quotas per tenant
 
 #### User Management & Personas
-- [ ] Role-based access control (RBAC)
-  - [ ] Admin persona (platform administration)
-  - [ ] Incident Commander persona
-  - [ ] Responder persona
-  - [ ] Observer/Viewer persona
+- [x] Role-based access control (RBAC)
+  - [x] Admin persona (platform administration)
+  - [x] Manager persona (user/group management)
+  - [x] Responder persona
+  - [x] Observer/Viewer persona
   - [ ] Reporter persona (create only)
-- [ ] User profile management
+- [x] User profile management
+- [x] User groups and membership management
 - [ ] Team assignments and hierarchies
 - [ ] On-call rotation management
-- [ ] User activity tracking and dashboards
+- [x] User activity tracking with audit logs
 
 #### Advanced Incident Management
 - [ ] Custom incident fields (user-defined metadata)
@@ -120,19 +171,20 @@ A comprehensive, multi-tenant, multi-user, multi-source incident management plat
 ### Phase 3: Advanced Features (Q3 2026)
 
 #### Attachments & Artifacts
-- [ ] Support for attachment objects in incidents
-- [ ] File upload (logs, screenshots, configs)
-- [ ] S3/cloud storage integration
+- [x] Support for attachment objects in incidents (Evidence system)
+- [x] File upload (logs, screenshots, configs) with drag-and-drop
+- [x] Cloud storage integration (MongoDB GridFS)
 - [ ] Inline image preview
-- [ ] Link external artifacts (Runbooks, Dashboards)
-- [ ] Version tracking for attached documents
+- [x] Link external artifacts (Evidence text and files)
+- [x] Audit tracking for attached documents
 
 #### Analytics & Reporting
-- [ ] Incident metrics dashboard
+- [x] Incident metrics dashboard
   - [ ] MTTD (Mean Time To Detect)
   - [ ] MTTA (Mean Time To Acknowledge)
   - [ ] MTTR (Mean Time To Resolve)
-  - [ ] Incident frequency by type/severity
+  - [x] Incident frequency and status tracking
+  - [x] Time-based filtering (7 days, 30 days, All Time)
 - [ ] Custom report builder
 - [ ] Scheduled report delivery
 - [ ] Incident trends and patterns
@@ -216,24 +268,24 @@ A comprehensive, multi-tenant, multi-user, multi-source incident management plat
 - [ ] Migrate to microservices architecture
 - [ ] GraphQL API alongside REST
 - [ ] Event-driven architecture with message queues
-- [ ] Comprehensive API documentation (OpenAPI/Swagger)
+- [x] Comprehensive API documentation (OpenAPI/Swagger)
 - [ ] SDK/Client libraries (Python, Go, Node.js)
 - [ ] Terraform modules for deployment
-- [ ] Helm charts for Kubernetes deployment
+- [x] Helm charts for Kubernetes deployment
 - [ ] Load testing and performance benchmarking
-- [ ] Comprehensive E2E test coverage
-- [ ] Security scanning and vulnerability management
+- [x] Testing framework with JUnit and JaCoCo coverage
+- [x] Security scanning and vulnerability management (GitLeaks)
 
 ---
 
 ## 📝 Documentation & Developer Experience
 
-- [ ] Developer documentation portal
-- [ ] API playground
+- [x] Developer documentation portal (MkDocs with Material theme)
+- [x] API playground (Swagger UI)
 - [ ] Integration guides and tutorials
 - [ ] Video tutorials and demos
 - [ ] Community forum
-- [ ] Contributing guidelines
+- [x] Contributing guidelines (CONTRIBUTING.md)
 - [ ] Plugin/extension architecture
 - [ ] Webhook documentation
 - [ ] Best practices guide
