@@ -6,6 +6,7 @@ import GettingStartedController from '@controllers/GettingStarted';
 import IncidentsController from '@controllers/Incidents';
 import IncidentDetailsController from '@controllers/IncidentDetails';
 import PasswordResetController from '@controllers/PasswordReset';
+import UsersController from '@controllers/Users';
 import { paths } from './RouteDefinitions';
 import AuthenticatedRoute from './AuthenticatedRoute';
 import UnauthenticatedRoute from './UnauthenticatedRoute';
@@ -19,6 +20,7 @@ export function Routes(): React.ReactElement {
       <AuthenticatedRoute exact path={paths.toGetStarted()} component={GettingStartedController} />
       <AuthenticatedRoute exact path={paths.toIncidentDashboard()} component={IncidentsController} />
       <AuthenticatedRoute exact path={paths.toIncidentDetails({ incidentId })} component={IncidentDetailsController} />
+      <AuthenticatedRoute exact path={paths.toUsers()} component={UsersController} />
       <AuthenticatedRoute exact path={paths.toPasswordReset()} component={PasswordResetController} />
       <UnauthenticatedRoute exact path={paths.toLogin()} component={LoginController} />
       <Route path="*" component={GenericErrorHandler} />

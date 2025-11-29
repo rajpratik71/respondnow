@@ -3,3 +3,5 @@ export * from './useIncidentsFilter';
 export * from './usePagination';
 export * from './useUpdateSearchParams';
 export * from './useSearchParams';
+export { useCurrentUser } from './useCurrentUser';
+export { usePermissions } from './usePermissions';

@@ -1,8 +1,8 @@
 site_name: RespondNow™
-site_url: https://respondnow.github.io/respondnow
+site_url: https://monitoring-projects.github.io/respondnow
 site_description: Documentation for RespondNow
-repo_name: respondnow/respondnow
-repo_url: https://github.com/respondnow/respondnow
+repo_name: monitoring-projects/respondnow
+repo_url: https://github.com/monitoring-projects/respondnow
 theme:
   name: material
   favicon: images/logo.svg
@@ -64,4 +64,11 @@ nav:
           - Update Incidents: user-guide/slack-based-incident-management/update-incidents.md
       - Navigate the RespondNow Portal:
           - View Incident Details: user-guide/navigate-the-respondnow-portal/view-incident-details.md
+  - Developer Guide:
+      - Implementation Plan: development/implementation-plan.md
+      - RBAC Complete Summary: development/rbac-complete-summary.md
+      - RBAC Implementation Guide: development/rbac-implementation-guide.md
+      - RBAC UI Documentation: development/rbac-ui-documentation.md
+      - User Management Complete: development/user-management-complete.md
+
   - Release Notes: release-notes/release-notes-tracker.md

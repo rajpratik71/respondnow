@@ -68,6 +68,7 @@ const SideNav: React.FC = () => {
       <Layout.Vertical padding="medium" className={css.sideNavLinkContainer}>
         <GettingStartedLink to={paths.toGetStarted()} />
         <SidebarLink label={getString('incidents')} to={paths.toIncidentDashboard()} icon="home" />
+        <SidebarLink label="Users" to={paths.toUsers()} icon="user" />
       </Layout.Vertical>
       <Layout.Vertical>
         <Container padding="medium" border={{ top: true }}>

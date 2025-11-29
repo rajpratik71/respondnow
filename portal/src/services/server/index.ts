@@ -119,3 +119,16 @@ export {
   useExportSinglePDFMutation,
   downloadBlob
 } from './hooks/useExportIncidentsMutation';
+
+export type {
+  CreateUserRequest,
+  UpdateUserRequest,
+  ListUsersParams
+} from './hooks/useUserManagement';
+export {
+  useListUsers,
+  useGetUser,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation
+} from './hooks/useUserManagement';

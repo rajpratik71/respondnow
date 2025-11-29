@@ -7,6 +7,7 @@
       "@context": ["context"],
       "@errors": ["errors"],
       "@hooks": ["hooks"],
+      "@hooks/*": ["hooks/*"],
       "@images/*": ["images/*"],
       "@interfaces": ["interfaces"],
       "@layouts": ["layouts"],
@@ -14,9 +15,10 @@
       "@services/*": ["services/*"],
       "@strings": ["strings"],
       "@tables": ["tables"],
+      "@tables/*": ["tables/*"],
+      "@types/*": ["types/*"],
       "@utils": ["utils"],
-      "@views/*": ["views/*"],
-      "@tables/*": ["tables/*"]
+      "@views/*": ["views/*"]
     },
     "target": "ES6",
     "module": "ESNext",
