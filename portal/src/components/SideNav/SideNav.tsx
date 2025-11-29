@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { withErrorBoundary } from 'react-error-boundary';
 import { Avatar, Button, ButtonSize, Container, Layout, Text, TextProps } from '@harnessio/uicore';
 import { Color, FontVariation } from '@harnessio/design-system';
@@ -10,9 +10,10 @@ import { Fallback } from '@errors';
 import respondNowLogo from '@images/respondNow.svg';
 import gettingStarted from '@images/gettingStarted.svg';
 import { useStrings } from '@strings';
-import { useLogout } from '@utils';
+import { useLogout, isManagerOrAbove } from '@utils';
 import { paths } from '@routes/RouteDefinitions';
 import { useAppStore } from '@hooks';
+import { EditProfileDialog } from '@components/EditProfile/EditProfileDialog';
 import css from './SideNav.module.scss';
 
 interface SidebarLinkProps extends NavLinkProps {
@@ -57,8 +58,11 @@ const SideNav: React.FC = () => {
   const { getString } = useStrings();
   const { forceLogout } = useLogout();
   const { currentUserInfo } = useAppStore();
+  const [editProfileOpen, setEditProfileOpen] = useState(false);
 
   const currentUserName = currentUserInfo.name || currentUserInfo.username;
+  const userRoles = currentUserInfo?.roleNames || [];
+  const canAccessUserManagement = isManagerOrAbove(userRoles);
 
   return (
     <Layout.Vertical height="100%" width={250} background={Color.PRIMARY_BG} className={css.sideNavMainContainer}>
@@ -66,8 +70,14 @@ const SideNav: React.FC = () => {
         <img src={respondNowLogo} alt="RespondNow" height={25} />
       </Container>
       <Layout.Vertical padding="medium" className={css.sideNavLinkContainer}>
+        <SidebarLink label="Dashboard" to={paths.toDashboard()} icon="dashboard" />
+        <SidebarLink label={getString('incidents')} to={paths.toIncidentDashboard()} icon="warning-sign" />
+        <SidebarLink label="Metrics" to={paths.toIncidentMetrics()} icon="chart" />
+        {canAccessUserManagement && <SidebarLink label="Users" to={paths.toUsers()} icon="user" />}
+        {canAccessUserManagement && <SidebarLink label="Groups" to={paths.toGroups()} icon="users" />}
+        {canAccessUserManagement && <SidebarLink label="Permissions" to={paths.toPermissionMatrix()} icon="lock" />}
+        {canAccessUserManagement && <SidebarLink label="Audit Log" to={paths.toSecurityAuditLog()} icon="list" />}
         <GettingStartedLink to={paths.toGetStarted()} />
-        <SidebarLink label={getString('incidents')} to={paths.toIncidentDashboard()} icon="home" />
       </Layout.Vertical>
       <Layout.Vertical>
         <Container padding="medium" border={{ top: true }}>
@@ -112,18 +122,31 @@ const SideNav: React.FC = () => {
                     </Text>
                   </Layout.Vertical>
                 </Layout.Horizontal>
-                <Button
-                  text={
-                    <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.WHITE}>
-                      {getString('logout')}
-                    </Text>
-                  }
-                  icon="log-out"
-                  width="100%"
-                  intent="danger"
-                  size={ButtonSize.SMALL}
-                  onClick={forceLogout}
-                />
+                <Layout.Vertical style={{ gap: '0.5rem', width: '100%' }}>
+                  <Button
+                    text={
+                      <Text font={{ variation: FontVariation.SMALL_BOLD }}>
+                        Edit Profile
+                      </Text>
+                    }
+                    icon="edit"
+                    width="100%"
+                    size={ButtonSize.SMALL}
+                    onClick={() => setEditProfileOpen(true)}
+                  />
+                  <Button
+                    text={
+                      <Text font={{ variation: FontVariation.SMALL_BOLD }} color={Color.WHITE}>
+                        {getString('logout')}
+                      </Text>
+                    }
+                    icon="log-out"
+                    width="100%"
+                    intent="danger"
+                    size={ButtonSize.SMALL}
+                    onClick={forceLogout}
+                  />
+                </Layout.Vertical>
               </Layout.Vertical>
             }
             tooltipProps={{
@@ -139,6 +162,11 @@ const SideNav: React.FC = () => {
           </Button>
         </Container>
       </Layout.Vertical>
+      
+      <EditProfileDialog
+        isOpen={editProfileOpen}
+        onClose={() => setEditProfileOpen(false)}
+      />
     </Layout.Vertical>
   );
 };

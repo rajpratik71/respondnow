@@ -38,6 +38,21 @@ public class JWTUtil {
         .compact();
   }
 
+  // Generate JWT Token with roles
+  public String generateToken(String username, String userId, String email, java.util.Set<String> roleNames) {
+    return Jwts.builder()
+        .setSubject(username)
+        .claim("username", userId)
+        .claim("email", email)
+        .claim("name", username)
+        .claim("roleNames", roleNames)
+        .setIssuedAt(new Date())
+        .setExpiration(
+            new Date(System.currentTimeMillis() + expirationTime * 1000)) // Convert to milliseconds
+        .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+        .compact();
+  }
+
   // Validate JWT Token
   public boolean validateToken(String token, String username) {
     String usernameFromToken = getUsernameFromToken(token);
@@ -80,5 +95,26 @@ public class JWTUtil {
   public String getNameFromToken(String token) {
     Claims claims = getClaimsFromToken(token);
     return claims.get("name", String.class);
+  }
+
+  // Extract roleNames from JWT token
+  @SuppressWarnings("unchecked")
+  public java.util.Set<String> getRoleNamesFromToken(String token) {
+    Claims claims = getClaimsFromToken(token);
+    java.util.List<String> rolesList = claims.get("roleNames", java.util.List.class);
+    if (rolesList != null) {
+      return new java.util.HashSet<>(rolesList);
+    }
+    return new java.util.HashSet<>();
+  }
+
+  // Extract current user from HttpServletRequest
+  public String getCurrentUser(javax.servlet.http.HttpServletRequest request) {
+    String authHeader = request.getHeader("Authorization");
+    if (authHeader != null && authHeader.startsWith("Bearer ")) {
+      String token = authHeader.substring(7);
+      return getUserIdFromToken(token);
+    }
+    return null;
   }
 }

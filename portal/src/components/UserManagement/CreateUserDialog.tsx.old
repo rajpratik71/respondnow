@@ -1,0 +1,172 @@
+import React, { useState } from 'react';
+import { useCreateUserMutation } from '@services/server/hooks/useUserManagement';
+import { CreateUserRequest } from '@services/server/types/UserManagement';
+
+interface Props {
+  isOpen: boolean;
+  onClose: () => void;
+}
+
+export const CreateUserDialog: React.FC<Props> = ({ isOpen, onClose }) => {
+  const createUser = useCreateUserMutation();
+  const [formData, setFormData] = useState<CreateUserRequest>({
+    username: '',
+    email: '',
+    password: '',
+    firstName: '',
+    lastName: '',
+    roleNames: [],
+    groupIds: []
+  });
+
+  const [errors, setErrors] = useState<Record<string, string>>({});
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+    setErrors(prev => ({ ...prev, [name]: '' }));
+  };
+
+  const validate = (): boolean => {
+    const newErrors: Record<string, string> = {};
+
+    if (!formData.username || formData.username.length < 3) {
+      newErrors.username = 'Username must be at least 3 characters';
+    }
+
+    if (!formData.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email address';
+    }
+
+    if (!formData.password || formData.password.length < 8) {
+      newErrors.password = 'Password must be at least 8 characters';
+    }
+
+    if (!formData.firstName) {
+      newErrors.firstName = 'First name is required';
+    }
+
+    if (!formData.lastName) {
+      newErrors.lastName = 'Last name is required';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    if (!validate()) {
+      return;
+    }
+
+    try {
+      await createUser.mutateAsync(formData);
+      onClose();
+    } catch (error) {
+      console.error('Failed to create user:', error);
+      setErrors({ submit: 'Failed to create user. Please try again.' });
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="dialog-overlay" onClick={onClose}>
+      <div className="dialog-content" onClick={(e) => e.stopPropagation()}>
+        <div className="dialog-header">
+          <h3>Create New User</h3>
+          <button className="close-button" onClick={onClose}>×</button>
+        </div>
+
+        <form onSubmit={handleSubmit} className="dialog-body">
+          <div className="form-group">
+            <label htmlFor="username">Username *</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              className={errors.username ? 'error' : ''}
+              placeholder="Enter username"
+            />
+            {errors.username && <span className="error-message">{errors.username}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="email">Email *</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              className={errors.email ? 'error' : ''}
+              placeholder="Enter email"
+            />
+            {errors.email && <span className="error-message">{errors.email}</span>}
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="password">Password *</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              className={errors.password ? 'error' : ''}
+              placeholder="Enter password (min 8 characters)"
+            />
+            {errors.password && <span className="error-message">{errors.password}</span>}
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label htmlFor="firstName">First Name *</label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                value={formData.firstName}
+                onChange={handleChange}
+                className={errors.firstName ? 'error' : ''}
+                placeholder="Enter first name"
+              />
+              {errors.firstName && <span className="error-message">{errors.firstName}</span>}
+            </div>
+
+            <div className="form-group">
+              <label htmlFor="lastName">Last Name *</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                value={formData.lastName}
+                onChange={handleChange}
+                className={errors.lastName ? 'error' : ''}
+                placeholder="Enter last name"
+              />
+              {errors.lastName && <span className="error-message">{errors.lastName}</span>}
+            </div>
+          </div>
+
+          {errors.submit && (
+            <div className="error-message submit-error">{errors.submit}</div>
+          )}
+
+          <div className="dialog-footer">
+            <button type="button" className="btn-secondary" onClick={onClose}>
+              Cancel
+            </button>
+            <button type="submit" className="btn-primary" disabled={createUser.isPending}>
+              {createUser.isPending ? 'Creating...' : 'Create User'}
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
+};

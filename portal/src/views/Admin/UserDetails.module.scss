@@ -1,0 +1,134 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  font-size: 16px;
+  color: #6c757d;
+}
+
+.card {
+  padding: 2rem;
+  background: white;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.infoGrid,
+.auditGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.infoRow,
+.auditRow {
+  display: grid;
+  grid-template-columns: 200px 1fr;
+  gap: 1rem;
+  padding: 0.75rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  align-items: center;
+
+  @media (max-width: 768px) {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+}
+
+.statusBadge {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+
+  &.active {
+    background: #d4edda;
+    color: #155724;
+  }
+
+  &.inactive {
+    background: #f8d7da;
+    color: #721c24;
+  }
+}
+
+.badgeContainer {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.roleBadge {
+  display: inline-block;
+  padding: 6px 12px;
+  background: #e7f3ff;
+  color: #0066cc;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.groupRoleBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #f0e7ff;
+  color: #6938c0;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.permissionBadge {
+  display: inline-block;
+  padding: 4px 8px;
+  background: #fff3cd;
+  color: #856404;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.permissionsSection {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #e9ecef;
+}
+
+.permissionsList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+}
+
+.groupItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background: #f8f9fa;
+  border-radius: 6px;
+  border: 1px solid #e9ecef;
+  transition: all 0.2s;
+
+  &:hover {
+    background: #e9ecef;
+    border-color: #0066cc;
+  }
+}
+
+.auditRow {
+  background: #fffbf0;
+  border-left: 3px solid #ffc107;
+}

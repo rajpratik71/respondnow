@@ -121,3 +121,30 @@ export {
   useExportCombinedMutation,
   downloadBlob
 } from './hooks/useExportIncidentsMutation';
+
+// User Management hooks
+export {
+  useUsers,
+  useUser,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+  useAssignRoleMutation,
+  useRemoveRoleMutation,
+  useUserPermissions
+} from './hooks/useUserManagement';
+
+// Group Management hooks
+export {
+  useGroups,
+  useGroup,
+  useCreateGroupMutation,
+  useUpdateGroupMutation,
+  useDeleteGroupMutation,
+  useAddGroupMemberMutation,
+  useRemoveGroupMemberMutation,
+  useAssignGroupRoleMutation
+} from './hooks/useGroupManagement';
+
+// User Management types
+export type { User, CreateUserRequest, UpdateUserRequest, Group, CreateGroupRequest, Permission, UserStatus } from './types/UserManagement';

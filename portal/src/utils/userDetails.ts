@@ -10,12 +10,28 @@ export function setUserDetails(
   isInitialLogin?: boolean,
   scope?: Scope
 ): void {
-  const email = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).email : '';
-  const name = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).name : '';
-  const username = accessToken ? (jwtDecode(accessToken) as DecodedTokenType).username : '';
+  const decodedToken = accessToken ? (jwtDecode(accessToken) as DecodedTokenType) : null;
+  const userId = decodedToken?.username || ''; // Backend stores userId in "username" claim
+  const email = decodedToken?.email || '';
+  const name = decodedToken?.name || '';
+  const username = decodedToken?.name || ''; // Use name as display username
+  const roleNames = decodedToken?.roleNames || [];
+
+  // Parse firstName and lastName from full name
+  const nameParts = name.trim().split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || ''; // Handle multi-part last names
 
   updateAppStore({
-    currentUserInfo: { email, name, username },
+    currentUserInfo: { 
+      userId, 
+      email, 
+      name, 
+      username, 
+      firstName,
+      lastName,
+      roleNames 
+    },
     scope,
     isInitialLogin
   });
@@ -34,11 +50,13 @@ export async function updateUserAndScopeFromAPI(
   accessToken: string,
   isInitialLogin?: boolean
 ): Promise<void> {
-  await getUserMappings({
-    queryParams: {
-      userId: getUsername(accessToken)
-    }
-  }).then(mappingData => {
+  try {
+    const mappingData = await getUserMappings({
+      queryParams: {
+        userId: getUsername(accessToken)
+      }
+    });
+    
     const scope: Scope = pick(mappingData?.data?.defaultMapping, [
       'accountIdentifier',
       'orgIdentifier',
@@ -46,5 +64,9 @@ export async function updateUserAndScopeFromAPI(
     ]);
 
     setUserDetails(updateAppStore, accessToken, isInitialLogin, scope);
-  });
+  } catch (error) {
+    // If user mappings don't exist (new user), just set user details without scope
+    console.warn('No user mappings found, setting user details without scope:', error);
+    setUserDetails(updateAppStore, accessToken, isInitialLogin);
+  }
 }

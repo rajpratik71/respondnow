@@ -9,6 +9,9 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.util.HashSet;
+import java.util.Set;
+
 @Data
 @NoArgsConstructor
 @Getter
@@ -29,6 +32,12 @@ public class User {
   private Boolean active;
 
   private Boolean changePasswordRequired;
+
+  private UserStatus status;
+
+  private Set<String> roleNames = new HashSet<>();
+
+  private Set<String> groupIds = new HashSet<>();
 
   private Long createdAt;
 

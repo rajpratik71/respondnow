@@ -2,18 +2,22 @@ package io.respondnow.security;
 
 import io.respondnow.util.JWTUtil;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.Set;
+import java.util.stream.Collectors;
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 @Component
+@Slf4j
 public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
   @Autowired private JWTUtil jwtUtil;
@@ -25,14 +29,29 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
       FilterChain filterChain)
       throws ServletException, IOException {
 
-    String token = getJWTFromRequest(request);
-    if (token != null && jwtUtil.validateToken(token, jwtUtil.getUsernameFromToken(token))) {
-      UsernamePasswordAuthenticationToken authentication =
-          new UsernamePasswordAuthenticationToken(
-              jwtUtil.getUsernameFromToken(token), null, new ArrayList<>() // No authorities needed
-              );
-      authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-      SecurityContextHolder.getContext().setAuthentication(authentication);
+    try {
+      String token = getJWTFromRequest(request);
+      if (token != null && jwtUtil.validateToken(token, jwtUtil.getUsernameFromToken(token))) {
+        String username = jwtUtil.getUsernameFromToken(token);
+        String userId = jwtUtil.getUserIdFromToken(token);
+        
+        // Extract roles from JWT token and convert to authorities
+        Set<String> roleNames = jwtUtil.getRoleNamesFromToken(token);
+        var authorities = roleNames.stream()
+            .map(SimpleGrantedAuthority::new)
+            .collect(Collectors.toList());
+        
+        log.debug("JWT Authentication - userId: {}, username: {}, roles: {}", userId, username, roleNames);
+        
+        UsernamePasswordAuthenticationToken authentication =
+            new UsernamePasswordAuthenticationToken(username, null, authorities);
+        authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+        
+        log.debug("Authentication successful for user: {} with authorities: {}", username, authorities);
+      }
+    } catch (Exception e) {
+      log.error("JWT authentication failed", e);
     }
 
     filterChain.doFilter(request, response);

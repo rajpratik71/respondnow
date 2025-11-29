@@ -139,8 +139,10 @@ public class IncidentController {
           String correlationId) {
     Criteria criteria = new Criteria();
 
-    criteria.and("accountIdentifier").is(accountIdentifier);
-
+    // Only filter by scope if provided (allows ADMIN users to see all incidents)
+    if (accountIdentifier != null && !accountIdentifier.isEmpty()) {
+      criteria.and("accountIdentifier").is(accountIdentifier);
+    }
     if (orgIdentifier != null && !orgIdentifier.isEmpty()) {
       criteria.and("orgIdentifier").is(orgIdentifier);
     }
