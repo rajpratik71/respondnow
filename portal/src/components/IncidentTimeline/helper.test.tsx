@@ -169,7 +169,7 @@ describe('getTimelinePropsBasedOnIncidentData', () => {
       });
 
       const result = getTimelinePropsBasedOnIncidentData({ incident, timeline });
-      const { container } = render(<>{result?.bodyContent}</>);
+      render(<>{result?.bodyContent}</>);
 
       expect(screen.getAllByTestId('status-badge').length).toBe(2);
     });
@@ -183,7 +183,7 @@ describe('getTimelinePropsBasedOnIncidentData', () => {
       });
 
       const result = getTimelinePropsBasedOnIncidentData({ incident, timeline });
-      const { container } = render(<>{result?.bodyContent}</>);
+      render(<>{result?.bodyContent}</>);
 
       expect(screen.getAllByTestId('severity-badge').length).toBe(2);
     });

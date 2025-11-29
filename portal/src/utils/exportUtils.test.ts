@@ -1,4 +1,4 @@
-import { incidentsToCSV, formatIncidentForPDF, escapeCsvValue } from '@utils';
+import { incidentsToCSV, formatIncidentForPDF } from '@utils';
 import { Incident } from '@services/server';
 
 // Mock jsPDF
@@ -185,7 +185,7 @@ describe('exportUtils', () => {
       const incident = createMockIncident({
         roles: [
           {
-            roleType: 'Incident Commander',
+            roleType: 'Incident_Commander',
             userDetails: { name: 'Jane Doe' }
           }
         ]
