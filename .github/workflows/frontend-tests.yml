@@ -45,7 +45,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: ./portal
-        run: yarn install --frozen-lockfile
+        run: yarn install
       
       - name: Run linting
         working-directory: ./portal
@@ -148,7 +148,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: ./portal
-        run: yarn install --frozen-lockfile
+        run: yarn install
       
       - name: Run all quality checks
         working-directory: ./portal
@@ -191,7 +191,7 @@ jobs:
       
       - name: Install dependencies
         working-directory: ./portal
-        run: yarn install --frozen-lockfile
+        run: yarn install
       
       - name: Install Playwright browsers
         working-directory: ./portal
