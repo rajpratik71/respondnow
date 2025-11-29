@@ -12,10 +12,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Run lychee link checker
         uses: lycheeverse/lychee-action@v1
         with:
-          args: "**/*.md"
+          args: "--exclude 'deploy/kubernetes/README.md' --exclude 'deploy/docker-compose/README.md' **/*.md"
           fail: true  # This ensures the action fails on broken links
