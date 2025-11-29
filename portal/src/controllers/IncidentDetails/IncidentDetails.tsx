@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import IncidentDetailsView from '@views/IncidentDetails';
 import { useGetIncidentQuery } from '@services/server';
 import { IncidentDetailsPathProps } from '@routes/RouteDefinitions';
-import { getScope, scopeExists } from '@utils';
+import { getScope } from '@utils';
 
 const IncidentDetailsController: React.FC = () => {
   const scope = getScope();
@@ -13,11 +13,13 @@ const IncidentDetailsController: React.FC = () => {
 
   const { data: incidentData, isLoading: incidentDataLoading } = useGetIncidentQuery(
     {
-      incidentIdentifier: incidentId,
+      incidentIdentifier: incidentId || '',
       queryParams: scope
     },
     {
-      enabled: !!incidentId && scopeExists()
+      enabled: !!incidentId
+      // Removed: && scopeExists()
+      // Allow query without scope - backend will handle access control
     }
   );
 

@@ -3,7 +3,7 @@ import { useToaster } from '@harnessio/uicore';
 import { useQueryClient } from '@tanstack/react-query';
 import { isEqual } from 'lodash-es';
 import IncidentsView from '@views/Incidents';
-import { getScope, scopeExists } from '@utils';
+import { getScope } from '@utils';
 import { initialIncidenrsFilterState, useIncidentsFilter, usePagination } from '@hooks';
 import { IncidentsTableProps } from '@interfaces';
 import { useListIncidentsQuery } from '@services/server';
@@ -50,22 +50,26 @@ const IncidentsController: React.FC = () => {
       onError: error => {
         showError((error as any)?.message);
       },
-      refetchInterval: 20000,
-      enabled: scopeExists()
+      refetchInterval: 20000
+      // Removed: enabled: scopeExists()
+      // Allow query without scope - backend will return all incidents for ADMIN users
     }
   );
 
+  const totalPages = incidentList?.data?.pagination?.totalPages || 0;
+  const totalItems = incidentList?.data?.pagination?.totalItems || 0;
+  
   const tableData: IncidentsTableProps = {
     content: incidentList?.data?.content ?? [],
-    pagination: {
-      itemCount: incidentList?.data?.pagination?.totalItems || 0,
-      pageCount: incidentList?.data?.pagination?.totalPages || 0,
+    pagination: totalItems > 0 ? {
+      itemCount: totalItems,
+      pageCount: totalPages,
       pageIndex: incidentList?.data?.pagination?.index || 0,
       pageSize: incidentList?.data?.pagination?.limit || 10,
       pageSizeOptions: pageSizeOptions,
       gotoPage: setPage,
       onPageSizeChange: setLimit
-    },
+    } : undefined,
     isLoading: incidentListLoading
   };
 

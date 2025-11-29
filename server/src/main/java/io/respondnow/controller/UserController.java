@@ -9,9 +9,9 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-@Tag(name = "Users", description = "User-related operations")
+@Tag(name = "Users (Legacy)", description = "Legacy user operations - DEPRECATED, use /users instead")
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/users-legacy")
 public class UserController {
 
   @Autowired private UserService userService;

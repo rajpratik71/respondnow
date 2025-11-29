@@ -2,7 +2,6 @@ package io.respondnow.service.hierarchy;
 
 import io.respondnow.dto.auth.UserIdentifiers;
 import io.respondnow.dto.auth.UserMappingData;
-import io.respondnow.exception.UserMappingNotFoundException;
 import io.respondnow.model.hierarchy.Account;
 import io.respondnow.model.hierarchy.Organization;
 import io.respondnow.model.hierarchy.Project;
@@ -67,8 +66,13 @@ public class UserMappingServiceImpl implements UserMappingService {
   public UserMappingData getUserMappings(String correlationId, String userId) {
     // Logic to fetch mappings
     List<UserMapping> mappings = userMappingRepository.findByUserId(userId);
+    
+    // If no mappings found, return empty data instead of throwing error
+    // This allows users (especially admins) to access the system without mappings
     if (mappings.isEmpty()) {
-      throw new UserMappingNotFoundException("No mappings found for the user");
+      UserMappingData emptyData = new UserMappingData();
+      emptyData.setMappings(new ArrayList<>());
+      return emptyData;
     }
 
     UserIdentifiers defaultMapping = null;

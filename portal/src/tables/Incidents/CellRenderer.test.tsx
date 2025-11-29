@@ -1,6 +1,5 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { MemoryRouter } from 'react-router-dom';
 import { IncidentReportedBy, IncidentCTA, IncidentLink } from './CellRenderer';
 import { Incident } from '@services/server';
 
@@ -83,7 +82,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('John Doe, via Web')).toBeInTheDocument();
       expect(screen.getByTestId('icon-globe')).toBeInTheDocument();
@@ -99,7 +99,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('API User, via API')).toBeInTheDocument();
       expect(screen.getByTestId('icon-globe')).toBeInTheDocument();
@@ -115,7 +116,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('Slack User, via Slack')).toBeInTheDocument();
       expect(screen.getByTestId('avatar')).toBeInTheDocument();
@@ -130,7 +132,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('Unknown User, via Web')).toBeInTheDocument();
     });
@@ -141,7 +144,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('N/A')).toBeInTheDocument();
     });
@@ -155,7 +159,8 @@ describe('CellRenderer', () => {
         createdAt: 1700000000
       });
 
-      render(<IncidentReportedBy row={row} />);
+      const result = IncidentReportedBy({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('johndoe, via Web')).toBeInTheDocument();
     });
@@ -172,7 +177,8 @@ describe('CellRenderer', () => {
         channels: [{ id: 'C123456', name: 'incident-channel' }]
       });
 
-      render(<IncidentCTA row={row} />);
+      const result = IncidentCTA({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('View Channel')).toBeInTheDocument();
     });
@@ -184,7 +190,8 @@ describe('CellRenderer', () => {
         channels: undefined
       });
 
-      render(<IncidentCTA row={row} />);
+      const result = IncidentCTA({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('View URL')).toBeInTheDocument();
     });
@@ -212,7 +219,8 @@ describe('CellRenderer', () => {
         incidentUrl: 'https://example.com/incident'
       });
 
-      render(<IncidentCTA row={row} />);
+      const result = IncidentCTA({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('View Channel')).toBeInTheDocument();
       expect(screen.queryByText('View URL')).not.toBeInTheDocument();
@@ -227,7 +235,8 @@ describe('CellRenderer', () => {
         incidentUrl: 'https://example.com/incident'
       });
 
-      render(<IncidentCTA row={row} />);
+      const result = IncidentCTA({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.queryByText('View Channel')).not.toBeInTheDocument();
       expect(screen.getByText('View URL')).toBeInTheDocument();
@@ -244,7 +253,8 @@ describe('CellRenderer', () => {
         incidentUrl: 'https://example.com/incident'
       });
 
-      render(<IncidentCTA row={row} />);
+      const result = IncidentCTA({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.queryByText('View Channel')).not.toBeInTheDocument();
       expect(screen.getByText('View URL')).toBeInTheDocument();
@@ -257,7 +267,8 @@ describe('CellRenderer', () => {
         incidentUrl: 'https://example.com/incident'
       });
 
-      render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      render(<>{result}</>);
 
       expect(screen.getByText('https://example.com/incident')).toBeInTheDocument();
       expect(screen.getByTestId('icon-link')).toBeInTheDocument();
@@ -270,7 +281,8 @@ describe('CellRenderer', () => {
         incidentUrl: longUrl
       });
 
-      render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      render(<>{result}</>);
 
       // URL should be truncated to 30 chars + '...'
       expect(screen.getByText('https://example.com/very/long/...')).toBeInTheDocument();
@@ -282,7 +294,8 @@ describe('CellRenderer', () => {
         incidentUrl: longUrl
       });
 
-      render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      render(<>{result}</>);
 
       const linkText = screen.getByText('https://example.com/very/long/...');
       expect(linkText).toHaveAttribute('title', longUrl);
@@ -293,7 +306,8 @@ describe('CellRenderer', () => {
         incidentUrl: undefined
       });
 
-      const { container } = render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      const { container } = render(<>{result}</>);
 
       expect(container.firstChild).toBeNull();
     });
@@ -303,7 +317,8 @@ describe('CellRenderer', () => {
         incidentUrl: ''
       });
 
-      const { container } = render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      const { container } = render(<>{result}</>);
 
       expect(container.firstChild).toBeNull();
     });
@@ -313,7 +328,8 @@ describe('CellRenderer', () => {
         incidentUrl: 'https://example.com/incident'
       });
 
-      render(<IncidentLink row={row} />);
+      const result = IncidentLink({ row } as any);
+      render(<>{result}</>);
 
       const linkText = screen.getByText('https://example.com/incident');
       expect(linkText).toHaveStyle({ textDecoration: 'underline' });

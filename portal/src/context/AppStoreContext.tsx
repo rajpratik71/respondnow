@@ -9,9 +9,13 @@ export interface Scope {
 export interface AppStoreContextProps {
   scope: Scope;
   currentUserInfo: {
+    userId?: string;
     name?: string;
     username?: string;
     email: string;
+    firstName?: string;
+    lastName?: string;
+    roleNames?: string[];
   };
   isInitialLogin?: boolean;
   updateAppStore: (data: Partial<AppStoreContextProps>) => void;
