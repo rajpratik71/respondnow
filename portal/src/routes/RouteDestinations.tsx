@@ -1,6 +1,7 @@
 import React from 'react';
 import { Redirect, Route, Switch } from 'react-router-dom';
 import LoginController from '@controllers/Login';
+import SignupController from '@controllers/Signup';
 import { GenericErrorHandler } from '@errors';
 import Dashboard from '@views/Dashboard';
 import GettingStartedController from '@controllers/GettingStarted';
@@ -40,6 +41,7 @@ export function Routes(): React.ReactElement {
       <RoleProtectedRoute exact path={paths.toPermissionMatrix()} component={PermissionMatrixPage} requireManagerOrAbove />
       <RoleProtectedRoute exact path={paths.toSecurityAuditLog()} component={SecurityAuditLogPage} requireManagerOrAbove />
       <UnauthenticatedRoute exact path={paths.toLogin()} component={LoginController} />
+      <UnauthenticatedRoute exact path={paths.toSignup()} component={SignupController} />
       <Route path="*" component={GenericErrorHandler} />
     </Switch>
   );

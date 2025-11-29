@@ -15,6 +15,7 @@ public class UpdateUserRequest {
     private String email;
 
     private UserStatus status;
+    private Boolean active;
     private Set<String> roleNames;
     private Set<String> groupIds;
 }

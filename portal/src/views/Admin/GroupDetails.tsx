@@ -123,6 +123,17 @@ export const GroupDetailsPage: React.FC = () => {
                   {group.id}
                 </Text>
               </div>
+
+              {group.userIds && group.userIds.length > 0 && (
+                <div className={styles.infoRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    User IDs
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.SMALL, family: 'mono' }}>
+                    {group.userIds.join(', ')}
+                  </Text>
+                </div>
+              )}
             </Layout.Vertical>
           </Layout.Vertical>
         </Card>
@@ -285,6 +296,28 @@ export const GroupDetailsPage: React.FC = () => {
                   }) : '—'}
                 </Text>
               </div>
+
+              {group.createdBy && (
+                <div className={styles.auditRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    Created By
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }}>
+                    {group.createdBy}
+                  </Text>
+                </div>
+              )}
+
+              {group.updatedBy && (
+                <div className={styles.auditRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    Updated By
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }}>
+                    {group.updatedBy}
+                  </Text>
+                </div>
+              )}
 
               {group.createdAt && group.updatedAt && (
                 <div className={styles.auditRow}>

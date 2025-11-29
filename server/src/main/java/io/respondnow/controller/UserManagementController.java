@@ -128,6 +128,39 @@ public class UserManagementController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{id}/activate")
+    @PreAuthorize("hasAnyAuthority('MANAGER', 'ADMIN', 'SYSTEM_ADMIN')")
+    @Operation(summary = "Activate pending user", description = "Activate a pending user account (MANAGER, ADMIN only)")
+    public ResponseEntity<?> activateUser(
+            @PathVariable String id,
+            HttpServletRequest httpRequest) {
+        try {
+            // Get current user from JWT token
+            String authHeader = httpRequest.getHeader("Authorization");
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                log.error("POST /users/{}/activate - No authorization header", id);
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(Map.of("error", "Unauthorized", "message", "Missing or invalid token"));
+            }
+            
+            String token = authHeader.substring(7);
+            String currentUserId = userService.getUserIdFromToken(token);
+            
+            log.info("POST /users/{}/activate - User {} activating user {}", id, currentUserId, id);
+            UserResponse activated = userService.activateUser(id, currentUserId);
+            log.info("POST /users/{}/activate - Successfully activated user by {}", id, currentUserId);
+            return ResponseEntity.ok(activated);
+        } catch (RuntimeException e) {
+            log.error("POST /users/{}/activate - Error activating user", id, e);
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(Map.of("error", "Failed to activate user", "message", e.getMessage()));
+        } catch (Exception e) {
+            log.error("POST /users/{}/activate - Unexpected error", id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(Map.of("error", "Failed to activate user", "message", e.getMessage()));
+        }
+    }
+
     @PutMapping("/profile")
     @PreAuthorize("isAuthenticated()")
     @Operation(summary = "Update own profile", description = "Any authenticated user can update their own profile")

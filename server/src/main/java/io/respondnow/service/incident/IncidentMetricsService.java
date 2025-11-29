@@ -25,15 +25,41 @@ public class IncidentMetricsService {
         log.info("Calculating incident metrics for last {} days", daysBack);
         
         List<Incident> allIncidents = incidentRepository.findAll();
+        log.info("Total incidents in DB: {}", allIncidents.size());
         
         // Filter incidents based on days back
         long cutoffTimestamp = 0;
         if (daysBack != null && daysBack > 0) {
-            cutoffTimestamp = System.currentTimeMillis() - (daysBack * 24L * 60 * 60 * 1000);
+            long currentTimeMillis = System.currentTimeMillis();
+            cutoffTimestamp = currentTimeMillis - (daysBack * 24L * 60 * 60 * 1000);
+            log.info("Filtering incidents after timestamp: {} (current: {}, daysBack: {})", 
+                     cutoffTimestamp, currentTimeMillis, daysBack);
+            
+            // Log sample timestamps for debugging
+            if (!allIncidents.isEmpty()) {
+                log.info("Sample incident createdAt timestamps: {}", 
+                         allIncidents.stream()
+                             .limit(5)
+                             .map(i -> i.getCreatedAt())
+                             .collect(Collectors.toList()));
+            }
+            
+            // Handle both milliseconds and seconds timestamps
             long finalCutoffTimestamp = cutoffTimestamp;
             allIncidents = allIncidents.stream()
-                    .filter(i -> i.getCreatedAt() != null && i.getCreatedAt() >= finalCutoffTimestamp)
+                    .filter(i -> {
+                        if (i.getCreatedAt() == null) return false;
+                        long timestamp = i.getCreatedAt();
+                        
+                        // If timestamp looks like seconds (< year 2100 in seconds), convert to millis
+                        if (timestamp < 4102444800L) {  // Jan 1, 2100 in seconds
+                            timestamp = timestamp * 1000;
+                        }
+                        
+                        return timestamp >= finalCutoffTimestamp;
+                    })
                     .collect(Collectors.toList());
+            log.info("Incidents after filtering: {}", allIncidents.size());
         }
         
         // Overall counts

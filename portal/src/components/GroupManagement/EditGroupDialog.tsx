@@ -33,14 +33,21 @@ export const EditGroupDialog: React.FC<EditGroupDialogProps> = ({ isOpen, group,
 
   const availableRoles = ['ADMIN', 'MANAGER', 'RESPONDER', 'VIEWER'];
 
-  // Get group members
+  // Debug logging
+  console.log('EditGroupDialog - Group ID:', group.id);
+  console.log('EditGroupDialog - Group userIds:', group.userIds);
+  console.log('EditGroupDialog - All users:', allUsers.map(u => ({ id: u.id, username: u.username, groupIds: u.groupIds })));
+
+  // Get group members - check both by user ID in group.userIds and group ID in user.groupIds
   const groupMembers = allUsers.filter(user => 
-    group.userIds?.includes(user.id) || group.members?.some((m: any) => m.id === user.id)
+    group.userIds?.includes(user.id) || user.groupIds?.includes(group.id)
   );
+
+  console.log('EditGroupDialog - Filtered groupMembers:', groupMembers);
 
   // Get users NOT in group
   const availableUsers = allUsers.filter(user => 
-    !group.userIds?.includes(user.id) && !group.members?.some((m: any) => m.id === user.id)
+    !group.userIds?.includes(user.id) && !user.groupIds?.includes(group.id)
   );
 
   useEffect(() => {

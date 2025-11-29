@@ -126,12 +126,50 @@ export const UserDetailsPage: React.FC = () => {
 
               <div className={styles.infoRow}>
                 <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                  Active
+                </Text>
+                <span className={`${styles.statusBadge} ${user.active ? styles.active : styles.inactive}`}>
+                  {user.active ? 'Yes' : 'No'}
+                </span>
+              </div>
+
+              <div className={styles.infoRow}>
+                <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                  Password Change Required
+                </Text>
+                <span className={`${styles.statusBadge} ${user.changePasswordRequired ? styles.inactive : styles.active}`}>
+                  {user.changePasswordRequired ? 'Yes' : 'No'}
+                </span>
+              </div>
+
+              <div className={styles.infoRow}>
+                <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                  Removed
+                </Text>
+                <span className={`${styles.statusBadge} ${user.removed ? styles.inactive : styles.active}`}>
+                  {user.removed ? 'Yes' : 'No'}
+                </span>
+              </div>
+
+              <div className={styles.infoRow}>
+                <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
                   User ID
                 </Text>
                 <Text color={Color.GREY_900} font={{ variation: FontVariation.SMALL, family: 'mono' }}>
                   {user.id}
                 </Text>
               </div>
+
+              {user.groupIds && user.groupIds.length > 0 && (
+                <div className={styles.infoRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    Group IDs
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.SMALL, family: 'mono' }}>
+                    {user.groupIds.join(', ')}
+                  </Text>
+                </div>
+              )}
             </Layout.Vertical>
           </Layout.Vertical>
         </Card>
@@ -276,6 +314,28 @@ export const UserDetailsPage: React.FC = () => {
                   }) : 'Never logged in'}
                 </Text>
               </div>
+
+              {user.createdBy && (
+                <div className={styles.auditRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    Created By
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }}>
+                    {user.createdBy}
+                  </Text>
+                </div>
+              )}
+
+              {user.updatedBy && (
+                <div className={styles.auditRow}>
+                  <Text color={Color.GREY_600} font={{ variation: FontVariation.SMALL, weight: 'semi-bold' }}>
+                    Updated By
+                  </Text>
+                  <Text color={Color.GREY_900} font={{ variation: FontVariation.BODY }}>
+                    {user.updatedBy}
+                  </Text>
+                </div>
+              )}
 
               {user.createdAt && user.updatedAt && (
                 <div className={styles.auditRow}>

@@ -26,6 +26,7 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, user, on
     lastName: user.lastName || '',
     email: user.email || '',
     status: user.status || 'ACTIVE',
+    active: user.active ?? false,
     roleNames: user.roleNames || []
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -35,14 +36,21 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, user, on
 
   const availableRoles = ['ADMIN', 'MANAGER', 'RESPONDER', 'VIEWER'];
 
-  // Get user's current groups
+  // Debug logging
+  console.log('EditUserDialog - User ID:', user.id);
+  console.log('EditUserDialog - User groupIds:', user.groupIds);
+  console.log('EditUserDialog - All groups:', allGroups.map(g => ({ id: g.id, name: g.name, userIds: g.userIds })));
+
+  // Get user's current groups - check both by group ID in user.groupIds and user ID in group.userIds
   const userGroups = allGroups.filter(group => 
-    group.userIds?.includes(user.id) || group.members?.some((m: any) => m.id === user.id)
+    user.groupIds?.includes(group.id) || group.userIds?.includes(user.id)
   );
+
+  console.log('EditUserDialog - Filtered userGroups:', userGroups);
 
   // Get groups user is NOT in
   const availableGroups = allGroups.filter(group => 
-    !group.userIds?.includes(user.id) && !group.members?.some((m: any) => m.id === user.id)
+    !user.groupIds?.includes(group.id) && !group.userIds?.includes(user.id)
   );
 
   useEffect(() => {
@@ -51,6 +59,7 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, user, on
       lastName: user.lastName || '',
       email: user.email || '',
       status: user.status || 'ACTIVE',
+      active: user.active ?? false,
       roleNames: user.roleNames || []
     });
   }, [user]);
@@ -220,8 +229,25 @@ export const EditUserDialog: React.FC<EditUserDialogProps> = ({ isOpen, user, on
                 >
                   <option value="ACTIVE">Active</option>
                   <option value="INACTIVE">Inactive</option>
+                  <option value="PENDING">Pending</option>
+                  <option value="SUSPENDED">Suspended</option>
                 </select>
-                <div className={styles.helpText}>Inactive users cannot log in</div>
+                <div className={styles.helpText}>User account status</div>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', cursor: 'pointer' }}>
+                  <input
+                    type="checkbox"
+                    checked={formData.active}
+                    onChange={(e) => setFormData({ ...formData, active: e.target.checked })}
+                    style={{ width: 'auto', cursor: 'pointer' }}
+                  />
+                  <span style={{ fontWeight: 600 }}>Active (Login Enabled)</span>
+                </label>
+                <div className={styles.helpText}>
+                  User must have this checked to be able to log in. Uncheck to prevent login access.
+                </div>
               </div>
             </div>
 

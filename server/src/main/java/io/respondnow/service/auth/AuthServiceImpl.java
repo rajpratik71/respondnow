@@ -6,6 +6,7 @@ import io.respondnow.dto.auth.LoginUserInput;
 import io.respondnow.exception.EmailAlreadyExistsException;
 import io.respondnow.exception.UserNotFoundException;
 import io.respondnow.model.user.User;
+import io.respondnow.model.user.UserStatus;
 import io.respondnow.repository.UserRepository;
 import io.respondnow.util.JWTUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,8 +38,8 @@ public class AuthServiceImpl implements AuthService {
               return new UserNotFoundException("User not found");
             });
 
-    log.debug("User found: userId={}, active={}, removed={}, changePasswordRequired={}", 
-        user.getUserId(), user.getActive(), user.getRemoved(), user.getChangePasswordRequired());
+    log.debug("User found: userId={}, active={}, status={}, removed={}, changePasswordRequired={}", 
+        user.getUserId(), user.getActive(), user.getStatus(), user.getRemoved(), user.getChangePasswordRequired());
 
     // Check if user is removed
     if (Boolean.TRUE.equals(user.getRemoved())) {
@@ -46,10 +47,10 @@ public class AuthServiceImpl implements AuthService {
       throw new UserNotFoundException("User account has been removed");
     }
 
-    // Check if user is active
-    if (Boolean.FALSE.equals(user.getActive())) {
-      log.error("Login failed - User account is not active: {}", input.getEmail());
-      throw new UserNotFoundException("User account is not active");
+    // Check if user is active - must be explicitly TRUE
+    if (!Boolean.TRUE.equals(user.getActive())) {
+      log.error("Login failed - User account is not active (active={}): {}", user.getActive(), input.getEmail());
+      throw new UserNotFoundException("User account is not active. Please contact administrator for activation.");
     }
 
     // Verify password
@@ -104,6 +105,7 @@ public class AuthServiceImpl implements AuthService {
     user.setName(input.getName());
     user.setUserId(input.getUserId());
     user.setActive(false);
+    user.setStatus(UserStatus.PENDING);
     user.setChangePasswordRequired(true);
     user.setCreatedAt(System.currentTimeMillis());
     user.setUpdatedAt(System.currentTimeMillis());
@@ -130,6 +132,7 @@ public class AuthServiceImpl implements AuthService {
     user.setName(input.getName());
     user.setUserId(input.getUserId());
     user.setActive(false);
+    user.setStatus(UserStatus.PENDING);
     user.setChangePasswordRequired(true);
     user.setCreatedAt(System.currentTimeMillis());
     user.setUpdatedAt(System.currentTimeMillis());

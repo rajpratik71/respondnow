@@ -5,11 +5,13 @@ import { Form, Formik } from 'formik';
 import * as Yup from 'yup';
 import { UseMutateFunction } from '@tanstack/react-query';
 import { withErrorBoundary } from 'react-error-boundary';
+import { useHistory } from 'react-router-dom';
 import mainLogo from '@images/respondNow.svg';
 import { useStrings } from '@strings';
 import PasswordInput from '@components/PasswordInput';
 import { LoginMutationProps, LoginResponseDto } from '@services/server';
 import { Fallback } from '@errors';
+import { paths } from '@routes/RouteDefinitions';
 import css from './Login.module.scss';
 
 interface LoginViewProps {
@@ -26,6 +28,7 @@ const LoginView: React.FC<LoginViewProps> = props => {
   const { mutation, loading } = props;
   const { getString } = useStrings();
   const { showError } = useToaster();
+  const history = useHistory();
 
   return (
     <Container height="100%" background={Color.PRIMARY_BG} flex={{ align: 'center-center' }}>
@@ -84,9 +87,14 @@ const LoginView: React.FC<LoginViewProps> = props => {
             </Form>
           </Formik>
           <Layout.Horizontal flex={{ align: 'center-center' }} spacing="xsmall">
-            <Text font={{ variation: FontVariation.SMALL_SEMI }}>{getString('loginFooterText')}</Text>
-            <Text font={{ variation: FontVariation.SMALL_SEMI }} color={Color.PRIMARY_7}>
-              {getString('termsAndConditions')}
+            <Text font={{ variation: FontVariation.SMALL_SEMI }}>Don't have an account?</Text>
+            <Text
+              font={{ variation: FontVariation.SMALL_SEMI }}
+              color={Color.PRIMARY_7}
+              style={{ cursor: 'pointer' }}
+              onClick={() => history.push(paths.toSignup())}
+            >
+              Sign Up
             </Text>
           </Layout.Horizontal>
         </Layout.Vertical>

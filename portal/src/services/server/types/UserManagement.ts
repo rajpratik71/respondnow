@@ -61,13 +61,18 @@ export interface User {
   lastName: string;
   fullName: string;
   status: UserStatus;
+  active?: boolean;
+  changePasswordRequired?: boolean;
+  removed?: boolean;
   roleNames: string[];
   groupIds: string[];
   groupNames?: string[]; // Human-readable group names for UI
   effectivePermissions: Permission[];
-  createdAt: string;
-  updatedAt: string;
-  lastLoginAt?: string;
+  createdAt: number;
+  updatedAt: number;
+  lastLoginAt?: number;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 export interface CreateUserRequest {
@@ -85,6 +90,7 @@ export interface UpdateUserRequest {
   lastName?: string;
   email?: string;
   status?: UserStatus;
+  active?: boolean;
   roleNames?: string[];
   groupIds?: string[];
 }
@@ -97,8 +103,10 @@ export interface Group {
   usernames?: string[]; // Human-readable usernames for UI
   roleNames: string[];
   memberCount: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: number;
+  updatedAt: number;
+  createdBy?: string;
+  updatedBy?: string;
 }
 
 export interface CreateGroupRequest {

@@ -5,6 +5,7 @@ export function normalizePath(url: string): string {
 export interface UseRouteDefinitionsProps {
   toRoot(): string;
   toLogin(): string;
+  toSignup(): string;
   toPasswordReset(): string;
   toDashboard(): string;
   toGetStarted(): string;
@@ -21,6 +22,7 @@ export interface UseRouteDefinitionsProps {
 export const paths: UseRouteDefinitionsProps = {
   toRoot: () => '/',
   toLogin: () => '/login',
+  toSignup: () => '/signup',
   toPasswordReset: () => '/password-reset',
   toDashboard: () => '/dashboard',
   toGetStarted: () => '/getting-started',

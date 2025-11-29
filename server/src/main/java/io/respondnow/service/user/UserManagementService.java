@@ -93,6 +93,12 @@ public class UserManagementService {
             user.setStatus(request.getStatus());
         }
 
+        // Update active flag if provided
+        if (request.getActive() != null) {
+            user.setActive(request.getActive());
+            log.info("Updated active flag for user {}: {}", user.getUserId(), request.getActive());
+        }
+
         // Update roles if provided
         if (request.getRoleNames() != null) {
             user.setRoleNames(request.getRoleNames());
@@ -176,6 +182,29 @@ public class UserManagementService {
     }
 
     /**
+     * Activate a pending user account (ADMIN/MANAGER only)
+     */
+    public UserResponse activateUser(String id, String activatedBy) {
+        User user = userRepository.findById(id)
+            .or(() -> userRepository.findByUserId(id))
+            .orElseThrow(() -> new RuntimeException("User not found: " + id));
+        
+        log.info("Activating user {} (current active={}) by {}", user.getUserId(), user.getActive(), activatedBy);
+        
+        user.setActive(Boolean.TRUE);  // Explicitly set to Boolean.TRUE
+        user.setStatus(UserStatus.ACTIVE);
+        user.setChangePasswordRequired(false);  // Allow login without password change
+        user.setUpdatedAt(System.currentTimeMillis());
+        user.setUpdatedBy(activatedBy);
+        
+        User activated = userRepository.save(user);
+        log.info("User {} activated successfully (new active={}) by {}", 
+                 activated.getUserId(), activated.getActive(), activatedBy);
+        
+        return toResponse(activated);
+    }
+
+    /**
      * Get all effective roles for a user including roles from groups
      */
     public Set<String> getEffectiveRoles(User user) {
@@ -215,6 +244,11 @@ public class UserManagementService {
         response.setStatus(user.getStatus() != null ? user.getStatus() : 
                           (user.getActive() != null && user.getActive() ? UserStatus.ACTIVE : UserStatus.INACTIVE));
         
+        // Map boolean flags
+        response.setActive(user.getActive());
+        response.setChangePasswordRequired(user.getChangePasswordRequired());
+        response.setRemoved(user.getRemoved());
+        
         // Get all effective roles (direct + inherited from groups)
         Set<String> effectiveRoles = getEffectiveRoles(user);
         response.setRoleNames(effectiveRoles);
@@ -234,15 +268,14 @@ public class UserManagementService {
         
         response.setEffectivePermissions(new HashSet<>());
         
-        if (user.getCreatedAt() != null) {
-            response.setCreatedAt(LocalDateTime.now()); // Convert from timestamp
-        }
-        if (user.getUpdatedAt() != null) {
-            response.setUpdatedAt(LocalDateTime.now()); // Convert from timestamp
-        }
-        if (user.getLastLoginAt() != null) {
-            response.setLastLoginAt(LocalDateTime.now()); // Convert from timestamp
-        }
+        // Map timestamps
+        response.setCreatedAt(user.getCreatedAt());
+        response.setUpdatedAt(user.getUpdatedAt());
+        response.setLastLoginAt(user.getLastLoginAt());
+        
+        // Map audit fields
+        response.setCreatedBy(user.getCreatedBy());
+        response.setUpdatedBy(user.getUpdatedBy());
         
         return response;
     }

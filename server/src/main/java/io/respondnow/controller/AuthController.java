@@ -19,6 +19,7 @@ import io.respondnow.dto.auth.UserMappingData;
 import io.respondnow.exception.EmailAlreadyExistsException;
 import io.respondnow.exception.UserNotFoundException;
 import io.respondnow.model.user.User;
+import io.respondnow.security.SecurityAuditLogger;
 import io.respondnow.service.auth.AuthService;
 import io.respondnow.service.hierarchy.UserMappingService;
 import io.respondnow.service.user.UserManagementService;
@@ -32,6 +33,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import java.util.Set;
 import java.util.UUID;
+import javax.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -52,15 +54,17 @@ public class AuthController {
   private final UserMappingService userMappingService;
   private final UserManagementService userService;
   private final JWTUtil jwtUtil;
+  private final SecurityAuditLogger auditLogger;
 
   @Autowired
   public AuthController(
       AuthService authService, UserMappingService userMappingService, 
-      UserManagementService userService, JWTUtil jwtUtil) {
+      UserManagementService userService, JWTUtil jwtUtil, SecurityAuditLogger auditLogger) {
     this.authService = authService;
     this.userMappingService = userMappingService;
     this.userService = userService;
     this.jwtUtil = jwtUtil;
+    this.auditLogger = auditLogger;
   }
 
   @Operation(summary = "Sign up a new user")
@@ -75,13 +79,15 @@ public class AuthController {
       log.info("POST /auth/signup - Signup request for email: {}, userId: {}", input.getEmail(), input.getUserId());
       
       User user = authService.signup(input);
-      String token = jwtUtil.generateToken(user.getName(), user.getUserId(), user.getEmail());
 
-      log.info("Signup successful for user: {}", user.getUserId());
+      log.info("Signup successful for user: {} - Status: PENDING approval", user.getUserId());
       
       SignupResponseDTO response =
           new SignupResponseDTO(
-              AppConstants.ResponseStatus.SUCCESS, "User registered successfully", token, user);
+              AppConstants.ResponseStatus.SUCCESS, 
+              "Account created successfully. Please wait for admin approval before logging in.", 
+              null, 
+              user);
       return ResponseEntity.status(HttpStatus.CREATED).body(response);
     } catch (EmailAlreadyExistsException e) {
       log.error("POST /auth/signup - Signup failed: {}", e.getMessage());
@@ -104,9 +110,10 @@ public class AuthController {
     @ApiResponse(responseCode = "401", description = "Unauthorized - Invalid credentials")
   })
   @PostMapping(LOGIN)
-  public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginUserInput input) {
+  public ResponseEntity<LoginResponseDTO> login(@RequestBody @Valid LoginUserInput input, HttpServletRequest request) {
+    String ipAddress = request.getRemoteAddr();
     try {
-      log.info("POST /auth/login - Login request for email: {}", input.getEmail());
+      log.info("POST /auth/login - Login request for email: {} from IP: {}", input.getEmail(), ipAddress);
       
       User user = authService.login(input);
       
@@ -133,6 +140,7 @@ public class AuthController {
       }
 
       log.info("Login successful for user: {}", user.getUserId());
+      auditLogger.logLogin(user.getUserId(), true, ipAddress);
       
       LoginResponseData data =
           new LoginResponseData(
@@ -142,6 +150,7 @@ public class AuthController {
       return ResponseEntity.ok(response);
     } catch (UserNotFoundException e) {
       log.error("POST /auth/login - Login failed: {}", e.getMessage());
+      auditLogger.logLogin(input.getEmail(), false, ipAddress);
       LoginResponseDTO response =
           new LoginResponseDTO(AppConstants.ResponseStatus.ERROR, e.getMessage(), null);
       return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);

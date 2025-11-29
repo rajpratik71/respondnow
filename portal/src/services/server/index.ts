@@ -36,6 +36,14 @@ export type {
   LoginRequestBody
 } from './hooks/useLoginMutation';
 export { login, useLoginMutation } from './hooks/useLoginMutation';
+export type {
+  SignupErrorResponse,
+  SignupMutationProps,
+  SignupOkResponse,
+  SignupProps,
+  SignupRequestBody
+} from './hooks/useSignupMutation';
+export { signup, useSignupMutation } from './hooks/useSignupMutation';
 export type { Attachment } from './schemas/Attachment';
 export type { ChangePasswordInput } from './schemas/ChangePasswordInput';
 export type { ChangePasswordResponseData } from './schemas/ChangePasswordResponseData';
@@ -53,6 +61,8 @@ export type { ListResponseDto } from './schemas/ListResponseDto';
 export type { LoginResponseData } from './schemas/LoginResponseData';
 export type { LoginResponseDto } from './schemas/LoginResponseDto';
 export type { LoginUserInput } from './schemas/LoginUserInput';
+export type { SignupResponseDto } from './schemas/SignupResponseDto';
+export type { SignupUserInput } from './schemas/SignupUserInput';
 export type { Pagination } from './schemas/Pagination';
 export type { Role } from './schemas/Role';
 export type { Service } from './schemas/Service';
