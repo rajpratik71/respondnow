@@ -27,6 +27,16 @@ management:
     health:
       show-details: always
 
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+    displayRequestDuration: true
+    persistAuthorization: true
+
 hierarchy:
   defaultUser:
     email: ${DEFAULT_USER_EMAIL:admin@respondnow.io}
