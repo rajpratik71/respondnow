@@ -1,0 +1,118 @@
+# Docker Compose for Running Tests Locally
+# Usage: docker-compose -f docker-compose.test.yml up
+
+version: '3.8'
+
+services:
+  # ================================================
+  # Backend Tests
+  # ================================================
+  backend-tests:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.test
+      target: test-runner
+    container_name: respondnow-backend-tests
+    volumes:
+      - ./test-results/backend:/test-reports
+      - ./test-results/backend-coverage:/coverage-report
+    environment:
+      - MAVEN_OPTS=-Xmx1024m
+    networks:
+      - test-network
+
+  # ================================================
+  # Frontend Tests
+  # ================================================
+  frontend-tests:
+    build:
+      context: ./portal
+      dockerfile: Dockerfile.test
+      target: test-runner
+    container_name: respondnow-frontend-tests
+    volumes:
+      - ./test-results/frontend:/app/test-results
+      - ./test-results/frontend-coverage:/app/coverage
+    environment:
+      - NODE_ENV=test
+      - CI=true
+    networks:
+      - test-network
+
+  # ================================================
+  # Integration Tests with MongoDB
+  # ================================================
+  integration-tests:
+    build:
+      context: ./server
+      dockerfile: Dockerfile.test
+      target: test-with-integration
+    container_name: respondnow-integration-tests
+    depends_on:
+      - mongodb-test
+    environment:
+      - SPRING_DATA_MONGODB_URI=mongodb://test:test@mongodb-test:27017/test?authSource=admin
+      - SPRING_PROFILES_ACTIVE=test
+    networks:
+      - test-network
+
+  mongodb-test:
+    image: mongo:5.0
+    container_name: mongodb-test
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=test
+      - MONGO_INITDB_ROOT_PASSWORD=test
+    ports:
+      - "27018:27017"  # Using different port to avoid conflicts
+    networks:
+      - test-network
+    healthcheck:
+      test: ["CMD", "mongo", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ================================================
+  # Combined Quality Checks
+  # ================================================
+  quality-checks:
+    build:
+      context: ./portal
+      dockerfile: Dockerfile.test
+      target: quality-checks
+    container_name: respondnow-quality-checks
+    volumes:
+      - ./test-results/quality:/app/reports
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
+# ================================================
+# Usage Examples:
+# ================================================
+# 
+# Run all tests:
+#   docker-compose -f docker-compose.test.yml up
+#
+# Run specific service:
+#   docker-compose -f docker-compose.test.yml up backend-tests
+#   docker-compose -f docker-compose.test.yml up frontend-tests
+#
+# Run integration tests:
+#   docker-compose -f docker-compose.test.yml up mongodb-test integration-tests
+#
+# Run quality checks:
+#   docker-compose -f docker-compose.test.yml up quality-checks
+#
+# Clean up:
+#   docker-compose -f docker-compose.test.yml down -v
+#
+# View logs:
+#   docker-compose -f docker-compose.test.yml logs -f backend-tests
+#
+# Remove old test results:
+#   rm -rf test-results/
+# ================================================

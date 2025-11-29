@@ -8,11 +8,13 @@ COPY yarn.lock app
 COPY tsconfig.json app
 
 WORKDIR /app
+
+RUN yarn
+
 COPY src src
 COPY config config
 COPY scripts scripts
 
-RUN yarn
 RUN yarn build
 
 FROM registry.access.redhat.com/ubi8/ubi-minimal:8.8

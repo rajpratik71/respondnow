@@ -1,0 +1,73 @@
+# Dockerfile for running backend tests
+# This dockerfile is optimized for testing with multi-stage build
+
+FROM maven:3.8.6-eclipse-temurin-11 AS test-runner
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml first for better caching
+COPY pom.xml .
+
+# Download dependencies (this layer will be cached if pom.xml doesn't change)
+RUN mvn dependency:go-offline -B
+
+# Copy source code
+COPY src ./src
+
+# Run tests with coverage
+RUN mvn clean test jacoco:report -B
+
+# Create a final stage for test results
+FROM scratch AS test-results
+COPY --from=test-runner /app/target/surefire-reports /test-reports
+COPY --from=test-runner /app/target/site/jacoco /coverage-report
+
+# ========================================
+# Alternative: Run tests with specific profiles
+# ========================================
+FROM maven:3.8.6-eclipse-temurin-11 AS test-with-integration
+
+WORKDIR /app
+
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+COPY src ./src
+
+# Run unit tests + integration tests
+RUN mvn clean verify -B
+
+# ========================================
+# Stage for continuous testing (watch mode)
+# ========================================
+FROM maven:3.8.6-eclipse-temurin-11 AS test-watch
+
+WORKDIR /app
+
+COPY pom.xml .
+RUN mvn dependency:go-offline -B
+
+COPY src ./src
+
+# Keep container running for continuous testing
+CMD ["mvn", "test", "-Dtest.watch=true"]
+
+# ========================================
+# Usage:
+# 
+# Build and run tests:
+#   docker build -f Dockerfile.test --target test-runner -t respondnow-backend-tests .
+#   docker run --rm respondnow-backend-tests
+#
+# Run with coverage:
+#   docker build -f Dockerfile.test --target test-runner -t respondnow-backend-tests .
+#   docker run --rm -v $(pwd)/test-results:/test-reports respondnow-backend-tests
+#
+# Extract test reports:
+#   docker build -f Dockerfile.test --target test-results -o test-output .
+#
+# Run integration tests:
+#   docker build -f Dockerfile.test --target test-with-integration -t respondnow-backend-integration .
+#   docker run --rm respondnow-backend-integration
+# ========================================

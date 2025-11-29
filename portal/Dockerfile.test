@@ -1,0 +1,132 @@
+# Dockerfile for running frontend tests
+# This dockerfile is optimized for testing with multi-stage build
+
+FROM node:16-alpine AS dependencies
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package.json yarn.lock ./
+
+# Install dependencies
+RUN yarn install --frozen-lockfile
+
+# ========================================
+# Stage for running tests
+# ========================================
+FROM node:16-alpine AS test-runner
+
+WORKDIR /app
+
+# Copy dependencies from previous stage
+COPY --from=dependencies /app/node_modules ./node_modules
+
+# Copy source code
+COPY . .
+
+# Run tests with coverage
+RUN yarn test --ci --coverage --maxWorkers=2
+
+# ========================================
+# Stage for test results
+# ========================================
+FROM scratch AS test-results
+COPY --from=test-runner /app/coverage /coverage
+COPY --from=test-runner /app/test-results /test-results
+
+# ========================================
+# Stage for watch mode (development)
+# ========================================
+FROM node:16-alpine AS test-watch
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+# Run tests in watch mode
+CMD ["yarn", "test", "--watch"]
+
+# ========================================
+# Stage for running specific tests
+# ========================================
+FROM node:16-alpine AS test-specific
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+# Run specific test files (pass TEST_FILE as build arg)
+ARG TEST_FILE="*.test.tsx"
+RUN yarn test ${TEST_FILE} --ci --coverage
+
+# ========================================
+# Stage for linting (code quality)
+# ========================================
+FROM node:16-alpine AS lint
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+# Run linting
+RUN yarn lint
+
+# ========================================
+# Stage for type checking
+# ========================================
+FROM node:16-alpine AS type-check
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+# Run TypeScript type checking
+RUN yarn tsc --noEmit
+
+# ========================================
+# Combined quality checks
+# ========================================
+FROM node:16-alpine AS quality-checks
+
+WORKDIR /app
+
+COPY --from=dependencies /app/node_modules ./node_modules
+COPY . .
+
+# Run all quality checks
+RUN yarn lint && \
+    yarn tsc --noEmit && \
+    yarn test --ci --coverage --maxWorkers=2
+
+# ========================================
+# Usage:
+# 
+# Build and run tests:
+#   docker build -f Dockerfile.test --target test-runner -t respondnow-frontend-tests .
+#   docker run --rm respondnow-frontend-tests
+#
+# Run with coverage output:
+#   docker build -f Dockerfile.test --target test-runner -t respondnow-frontend-tests .
+#   docker run --rm -v $(pwd)/coverage:/app/coverage respondnow-frontend-tests
+#
+# Extract test reports:
+#   docker build -f Dockerfile.test --target test-results -o test-output .
+#
+# Run in watch mode:
+#   docker build -f Dockerfile.test --target test-watch -t respondnow-frontend-watch .
+#   docker run --rm -it -v $(pwd):/app respondnow-frontend-watch
+#
+# Run specific tests:
+#   docker build -f Dockerfile.test --target test-specific \
+#     --build-arg TEST_FILE="Evidence.test.tsx" \
+#     -t respondnow-specific-test .
+#
+# Run all quality checks:
+#   docker build -f Dockerfile.test --target quality-checks -t respondnow-quality .
+#   docker run --rm respondnow-quality
+# ========================================
